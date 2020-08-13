@@ -75,4 +75,15 @@ module.exports = {
       );
     });
   },
+  getProductByName: (name) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM product WHERE product_name LIKE product_name",
+        name,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
 };

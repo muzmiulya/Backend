@@ -5,11 +5,13 @@ const {
   postProduct,
   patchProduct,
   deleteProduct,
+  getProductByName,
 } = require("../controller/product");
 
 //GET
 router.get("/", getAllProduct);
 router.get("/:id", getProductById);
+router.get("/", getProductByName);
 
 //POST
 router.post("/", postProduct);
