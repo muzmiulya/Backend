@@ -1,19 +1,22 @@
 const router = require("express").Router();
 const {
   getAllHistory,
-  getHistoryById,
+  // getHistoryById,
   postHistory,
-  patchHistory,
-  deleteHistory,
+  // purchaseHistory
+  // patchHistory,
+  // deleteHistory,
 } = require("../controller/history");
 
 router.get("/", getAllHistory);
-router.get("/:id", getHistoryById);
+// router.get("/:id", getHistoryById);
 
 router.post("/", postHistory);
 
-router.patch("/:id", patchHistory);
+// router.post("/purchase", purchaseHistory)
 
-router.delete("/:id", deleteHistory);
+// router.patch("/:id", patchHistory);
+
+// router.delete("/:id", deleteHistory);
 
 module.exports = router;

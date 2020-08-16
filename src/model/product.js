@@ -1,11 +1,26 @@
 const connection = require("../config/mysql");
+const product = require("../controller/product");
 module.exports = {
-  getAllProduct: () => {
+  // getProduct: (search, sort, limit, offset) => {
+  //   return new Promise((resolve, reject) => {
+  //     connection.query(`SELECT * FROM product WHERE product_name LIKE ? ORDER BY ${sort}${ASC / DESC} LIMIT ? OFFSET ?`, [search, sort, limit, offset], (error, result) => {
+  //       !error ? resolve(result) : reject(new Error(error));
+  //     });
+  //   });
+  // },
+  getProduct: (search, sort, page, limit, offset) => {
     return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM product", (error, result) => {
+      connection.query(`SELECT * FROM product WHERE product_name LIKE ? LIMIT ? OFFSET ?`, [search, sort, page, limit, offset], (error, result) => {
         !error ? resolve(result) : reject(new Error(error));
       });
     });
+  },
+  getProductCount: () => {
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT COUNT(*) as total FROM product ", (error, result) => {
+        !error ? resolve(result[0].total) : reject(new Error(error));
+      })
+    })
   },
   getProductById: (id) => {
     return new Promise((resolve, reject) => {
@@ -24,7 +39,6 @@ module.exports = {
         "INSERT INTO product SET ?",
         setData,
         (error, result) => {
-          // console.log(result);
           if (!error) {
             const newResult = {
               product_id: result.insertId,
@@ -75,15 +89,5 @@ module.exports = {
       );
     });
   },
-  getProductByName: (name) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT * FROM product WHERE product_name LIKE product_name",
-        name,
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
-        }
-      );
-    });
-  },
+
 };
