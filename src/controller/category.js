@@ -2,7 +2,6 @@ const {
   getAllcategory,
   getCategoryById,
   postCategory,
-  patchCategory,
   deleteCategory,
 } = require("../model/category");
 const helper = require("../helper/index");
@@ -50,35 +49,6 @@ module.exports = {
       return helper.response(response, 200, "Success Post Category", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-    }
-  },
-  patchCategory: async (request, response) => {
-    try {
-      const { id } = request.params;
-      const { category_name, category_status } = request.body;
-      const setData = {
-        category_name,
-        category_updated_at: new Date(),
-        category_status,
-      };
-      const checkId = await getCategoryById(id);
-      if (checkId.length > 0) {
-        const result = await patchCategory(setData, id);
-        return helper.response(
-          response,
-          200,
-          "Success Category Updated",
-          result
-        );
-      } else {
-        return helper.response(
-          response,
-          404,
-          `Category By Id: ${id} Not Found`
-        );
-      }
-    } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
     }
   },
   deleteCategory: async (request, response) => {

@@ -1,25 +1,27 @@
 const {
   getAllPurchase,
-  getJoinPurchase,
   getPurchaseById,
+  postOrder,
+  purchaseHistory,
   postPurchase,
-  patchPurchase,
+  getSubTotal,
+  patchHistory,
   deletePurchase,
 } = require("../model/purchase");
+
 const helper = require("../helper/index");
 
 module.exports = {
-  // getAllPurchase: async (request, response) => {
-  //   try {
-  //     const result = await getAllPurchase();
-  //     return helper.response(response, 200, "Sukses Get Purchase", result);
-  //   } catch (error) {
-  //     return helper.response(response, 400, "Bad Request", error);
-  //   }
-  // },
+  getAllPurchase: async (request, response) => {
+    try {
+      const result = await getAllPurchase();
+      return helper.response(response, 200, "Sukses Get Purchase", result);
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
+    }
+  },
   getPurchaseById: async (request, response) => {
     try {
-      // const id = request.params.id
       const { id } = request.params;
       const result = await getPurchaseById(id);
       if (result.length > 0) {
@@ -40,60 +42,71 @@ module.exports = {
       return helper.response(response, 400, "Bad Request", error);
     }
   },
-  postPurchase: async (request, response) => {
+  postOrder: async (request, response) => {
     try {
       const setData = {
-        purchase_qty: request.body.purchase_qty,
-        purchase_total: product_price * purchase_qty,
+        history_invoices: Math.floor(Math.random() * 1000000000) + 1000000000,
+        history_created_at: new Date(),
       };
-      const result = await postPurchase(setData);
-      console.log(setData);
-      return helper.response(response, 200, "Success Purchase Posted", result);
-      //   console.log(result);
+      const result = await postOrder(setData)
+
+
+      const requested = await request.body.orders
+      const marble = await Promise.all(requested.map(async (value) => {
+        const result2 = await purchaseHistory(value.product_id)
+        const setData2 = {
+          history_id: result.history_id,
+          product_id: value.product_id,
+          purchase_qty: value.purchase_qty,
+          purchase_total: value.purchase_qty * result2[0].product_price + (value.purchase_qty * result2[0].product_price * 10 / 100),
+        }
+        return result3 = await postPurchase(setData2)
+
+      }))
+      const i = result.history_id
+      const result4 = await getSubTotal(i)
+      function getNumber(input, field) {
+        let output = [];
+        for (let i = 0; i < input.length; ++i)
+          output.push(input[i][field]);
+        return output;
+      }
+      subs = getNumber(result4, 'SUM(purchase_total)')
+      const marbeles = subs.flat()
+      const rouke = marbeles.find(Number)
+      const setData3 = {
+        history_subtotal: rouke
+      }
+      const result5 = await patchHistory(setData3, i)
+
+
+      const datas = {
+        history_id: result.history_id,
+        history_invoices: result.history_invoices,
+      }
+      const datar = {
+        history_subtotal: result5.history_subtotal
+      }
+      marble.push(datar)
+      marble.unshift(datas)
+
+
+      return helper.response(response, 200, "Success Order Posted", marble);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
-      //   console.log(error);
+
     }
   },
-  patchPurchase: async (request, response) => {
+  deletePurchase: async (request, response) => {
     try {
       const { id } = request.params;
-      const { purchase_qty, purchase_ppn, purchase_total } = request.body;
-      const setData = {
-        history_id,
-        product_id,
-        purchase_qty,
-        purchase_ppn,
-        purchase_total,
-      };
-      const checkId = await getPurchaseById(id);
-      if (checkId.length > 0) {
-        const result = await patchPurchase(setData, id);
-        return helper.response(
-          response,
-          200,
-          "Success Purchase Updated",
-          result
-        );
-      } else {
-        return helper.response(
-          response,
-          404,
-          `Purchase By Id: ${id} Not Found`
-        );
-      }
+      const result = await deletePurchase(id);
+      console.log(result);
+      return helper.response(response, 200, "Success Purchase Deleted", result);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
     }
   },
-  // deletePurchase: async (request, response) => {
-  //   try {
-  //     const { id } = request.params;
-  //     const result = await deletePurchase(id);
-  //     console.log(result);
-  //     return helper.response(response, 200, "Success Purchase Deleted", result);
-  //   } catch (error) {
-  //     return helper.response(response, 404, "Bad Request", error);
-  //   }
-  // },
 };
+
+

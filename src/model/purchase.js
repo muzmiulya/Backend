@@ -19,17 +19,47 @@ module.exports = {
       );
     });
   },
-  postPurchase: (setData) => {
+  postOrder: (setData) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "INSERT INTO history SET ?",
+        setData,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              history_id: result.insertId,
+              ...setData,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
+  purchaseHistory: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM product WHERE product_id = ?",
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+
+        }
+      );
+    });
+  },
+  postPurchase: (setData2) => {
     return new Promise((resolve, reject) => {
       connection.query(
         "INSERT INTO purchase SET ?",
-        setData,
+        setData2,
         (error, result) => {
-          // console.log(result);
           if (!error) {
             const newResult = {
               purchase_id: result.insertId,
-              ...setData,
+              ...setData2,
             };
             resolve(newResult);
           } else {
@@ -39,16 +69,25 @@ module.exports = {
       );
     });
   },
-  patchPurchase: (setData, id) => {
+  getSubTotal: (i) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "UPDATE purchase SET ? WHERE purchase_id = ?",
-        [setData, id],
+        "SELECT SUM(purchase_total) FROM purchase WHERE history_id = ?", i,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        });
+    });
+  },
+  patchHistory: (setData3, d) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE history SET ? WHERE history_id = ?",
+        [setData3, d],
         (error, result) => {
           if (!error) {
             const newResult = {
-              purchase_id: id,
-              ...setData,
+              history_id: d,
+              ...setData3,
             };
             resolve(newResult);
           } else {
@@ -58,22 +97,25 @@ module.exports = {
       );
     });
   },
-  // deletePurchase: (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query(
-  //       "DELETE FROM purchase WHERE purchase_id = ?",
-  //       id,
-  //       (error, result) => {
-  //         if (!error) {
-  //           const newResult = {
-  //             id: id,
-  //           };
-  //           resolve(newResult);
-  //         } else {
-  //           reject(new Error(error));
-  //         }
-  //       }
-  //     );
-  //   });
-  // },
+
+  deletePurchase: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "DELETE FROM purchase WHERE purchase_id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              id: id,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
 };
+
+

@@ -1,21 +1,17 @@
 const router = require("express").Router();
 const {
-  // getAllPurchase,
+  getAllPurchase,
   getPurchaseById,
-  postPurchase,
-  patchPurchase,
-  // deletePurchase,
-  // getJoinPurchase,
+  postOrder,
+  deletePurchase,
 } = require("../controller/purchase");
 
-// router.get("/", getAllPurchase);
+router.get("/", getAllPurchase);
 router.get("/:id", getPurchaseById);
-// router.get("/join/:join", getJoinPurchase);
 
-router.post("/", postPurchase);
+router.post("/", postOrder);
 
-router.patch("/:id", patchPurchase);
-
-// router.delete("/:id", deletePurchase);
+router.delete("/:id", deletePurchase);
 
 module.exports = router;
+

@@ -1,16 +1,9 @@
 const connection = require("../config/mysql");
 const product = require("../controller/product");
 module.exports = {
-  // getProduct: (search, sort, limit, offset) => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query(`SELECT * FROM product WHERE product_name LIKE ? ORDER BY ${sort}${ASC / DESC} LIMIT ? OFFSET ?`, [search, sort, limit, offset], (error, result) => {
-  //       !error ? resolve(result) : reject(new Error(error));
-  //     });
-  //   });
-  // },
-  getProduct: (search, sort, page, limit, offset) => {
+  getProduct: (search, sort, limit, offset) => {
     return new Promise((resolve, reject) => {
-      connection.query(`SELECT * FROM product WHERE product_name LIKE ? LIMIT ? OFFSET ?`, [search, sort, page, limit, offset], (error, result) => {
+      connection.query(`SELECT * FROM product WHERE product_name LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`, [search, limit, offset], (error, result) => {
         !error ? resolve(result) : reject(new Error(error));
       });
     });
