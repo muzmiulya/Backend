@@ -37,7 +37,11 @@ module.exports = {
     }
   },
   postCategory: async (request, response) => {
-    // console.log(request.body);
+    if (request.body.category_name === undefined || request.body.category_name === null || request.body.category_name === '') {
+      return helper.response(response, 404, "category_id must be filled")
+    } else if (request.body.category_status === undefined || request.body.category_status === null || request.body.category_status === '') {
+      return helper.response(response, 404, "product_name must be filled")
+    }
     try {
       const setData = {
         category_name: request.body.category_name,

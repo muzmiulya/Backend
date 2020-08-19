@@ -43,6 +43,12 @@ module.exports = {
     }
   },
   postOrder: async (request, response) => {
+    if (request.body === undefined || request.body === null || request.body === '') {
+      return helper.response(response, 404, "must input orders")
+    } else if (request.body.orders === undefined || request.body.orders === null || request.body.orders === '') {
+      return helper.response(response, 404, "orders must be filled")
+    }
+
     try {
       const setData = {
         history_invoices: Math.floor(Math.random() * 1000000000) + 1000000000,
@@ -53,6 +59,11 @@ module.exports = {
 
       const requested = await request.body.orders
       const marble = await Promise.all(requested.map(async (value) => {
+        if (value.product_id === undefined || value.product_id === null || value.product_id === '') {
+          return helper.response(response, 404, "product_id must be filled")
+        } else if (value.purchase_qty === undefined || value.purchase_qty === null || value.purchase_qty === '') {
+          return helper.response(response, 404, "purchase_qty must be filled")
+        }
         const result2 = await purchaseHistory(value.product_id)
         const setData2 = {
           history_id: result.history_id,
@@ -78,23 +89,15 @@ module.exports = {
         history_subtotal: rouke
       }
       const result5 = await patchHistory(setData3, i)
-
-
-      const datas = {
+      const data = {
         history_id: result.history_id,
         history_invoices: result.history_invoices,
-      }
-      const datar = {
+        orders: marble,
         history_subtotal: result5.history_subtotal
       }
-      marble.push(datar)
-      marble.unshift(datas)
-
-
-      return helper.response(response, 200, "Success Order Posted", marble);
+      return helper.response(response, 200, "Success Order Posted", data);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
-
     }
   },
   deletePurchase: async (request, response) => {

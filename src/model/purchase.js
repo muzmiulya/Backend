@@ -72,7 +72,7 @@ module.exports = {
   getSubTotal: (i) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT SUM(purchase_total) FROM purchase WHERE history_id = ?", i,
+        "SELECT COUNT(purchase_total) FROM purchase WHERE history_id = ?", i,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
         });

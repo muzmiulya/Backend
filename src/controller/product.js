@@ -44,10 +44,10 @@ module.exports = {
     if (search === undefined || search === null || search === '') {
       search = '%'
     } else {
-      search = search + "%"
+      search = "%" + search + "%"
     }
     if (sort === undefined || sort === null || sort === '') {
-      sort = `CURRENT_TIMESTAMP`
+      sort = `product_id`
     }
     if (page === undefined || page === null || page === '') {
       page = parseInt(1)
@@ -55,7 +55,7 @@ module.exports = {
       page = parseInt(page)
     }
     if (limit === undefined || limit === null || limit === '') {
-      limit = parseInt(100)
+      limit = parseInt(9)
     } else {
       limit = parseInt(limit)
     }
@@ -103,7 +103,19 @@ module.exports = {
     }
   },
   postProduct: async (request, response) => {
+    if (request.body.category_id === undefined || request.body.category_id === null || request.body.category_id === '') {
+      return helper.response(response, 404, "category_id must be filled")
+    } else if (request.body.product_name === undefined || request.body.product_name === null || request.body.product_name === '') {
+      return helper.response(response, 404, "product_name must be filled")
+    } else if (request.body.product_price === undefined || request.body.product_price === null || request.body.product_price === '') {
+      return helper.response(response, 404, "product_price must be filled")
+    } else if (request.body.product_picture === undefined || request.body.product_picture === null || request.body.product_picture === '') {
+      return helper.response(response, 404, "product_picture must be filled")
+    } else if (request.body.product_status === undefined || request.body.product_status === null || request.body.product_status === '') {
+      return helper.response(response, 404, "product_status must be filled")
+    }
     try {
+
       const setData = {
         category_id: request.body.category_id,
         product_name: request.body.product_name,
@@ -122,6 +134,17 @@ module.exports = {
     }
   },
   patchProduct: async (request, response) => {
+    if (request.body.category_id === undefined || request.body.category_id === null || request.body.category_id === '') {
+      return helper.response(response, 404, "category_id must be filled")
+    } else if (request.body.product_name === undefined || request.body.product_name === null || request.body.product_name === '') {
+      return helper.response(response, 404, "product_name must be filled")
+    } else if (request.body.product_price === undefined || request.body.product_price === null || request.body.product_price === '') {
+      return helper.response(response, 404, "product_price must be filled")
+    } else if (request.body.product_picture === undefined || request.body.product_picture === null || request.body.product_picture === '') {
+      return helper.response(response, 404, "product_picture must be filled")
+    } else if (request.body.product_status === undefined || request.body.product_status === null || request.body.product_status === '') {
+      return helper.response(response, 404, "product_status must be filled")
+    }
     try {
       const { id } = request.params;
       const {

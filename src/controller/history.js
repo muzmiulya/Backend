@@ -1,6 +1,7 @@
 const {
   getAllHistory,
   getHistoryById,
+  joinHistory,
   deleteHistory,
 } = require("../model/history");
 
@@ -17,23 +18,35 @@ module.exports = {
   },
   getHistoryById: async (request, response) => {
     try {
-      // const id = request.params.id
       const { id } = request.params;
       const result = await getHistoryById(id);
       if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          "Success Get History By Id",
-          result
-        );
+        // return helper.response(
+        //   response,
+        //   200,
+        //   "Success Get History By Id",
+        //   result
+        // );
+        console.log(result)
       } else {
         return helper.response(response, 404, `History By Id: ${id} Not Found`);
       }
     } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
+      // return helper.response(response, 400, "Bad Request", error);
+      console.log(error)
     }
   },
+  // joinHistory: async (request, response) => {
+  //   try {
+  //     const result = await joinHistory();
+  //     return helper.response(response, 200, "Sukses Get History", result);
+  //     // console.log(result)
+  //   } catch (error) {
+  //     return helper.response(response, 400, "Bad Request", error);
+  //     // console.log(error)
+
+  //   }
+  // },
   deleteHistory: async (request, response) => {
     try {
       const { id } = request.params;
