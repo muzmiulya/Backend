@@ -19,7 +19,10 @@ module.exports = {
   getHistoryById: async (request, response) => {
     try {
       const { id } = request.params;
-      const result = await getHistoryById(id);
+      const getHistory = await getAllHistory();
+      const data = {
+
+      }
       if (result.length > 0) {
         // return helper.response(
         //   response,
