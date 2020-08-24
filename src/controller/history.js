@@ -1,7 +1,7 @@
 const {
   getAllHistory,
   getHistoryById,
-  joinHistory,
+  // joinHistory,
   deleteHistory,
 } = require("../model/history");
 

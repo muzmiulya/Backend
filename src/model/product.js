@@ -1,19 +1,37 @@
 const connection = require("../config/mysql");
 const product = require("../controller/product");
 module.exports = {
-  getProduct: (search, sort, limit, offset) => {
+  getProduct: (sort, limit, offset) => {
     return new Promise((resolve, reject) => {
-      connection.query(`SELECT * FROM product WHERE product_name LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`, [search, limit, offset], (error, result) => {
-        !error ? resolve(result) : reject(new Error(error));
-      });
+      connection.query(
+        `SELECT * FROM product ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        [limit, offset],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getProductByName: (search, limit) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM product WHERE product_name LIKE ? LIMIT ?`,
+        [search, limit],
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
     });
   },
   getProductCount: () => {
     return new Promise((resolve, reject) => {
-      connection.query("SELECT COUNT(*) as total FROM product ", (error, result) => {
-        !error ? resolve(result[0].total) : reject(new Error(error));
-      })
-    })
+      connection.query(
+        "SELECT COUNT(*) as total FROM product ",
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
   },
   getProductById: (id) => {
     return new Promise((resolve, reject) => {
@@ -82,5 +100,4 @@ module.exports = {
       );
     });
   },
-
 };
