@@ -44,8 +44,7 @@ module.exports = {
         "SELECT * FROM product WHERE product_id = ?",
         id,
         (error, result) => {
-          !error ? resolve(result) : reject(new Error(error))
-
+          !error ? resolve(result) : reject(new Error(error));
         }
       );
     });
@@ -72,10 +71,12 @@ module.exports = {
   getSubTotal: (i) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT(purchase_total) FROM purchase WHERE history_id = ?", i,
+        "SELECT SUM(purchase_total) FROM purchase WHERE history_id = ?",
+        i,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
-        });
+        }
+      );
     });
   },
   patchHistory: (setData3, d) => {
@@ -117,5 +118,3 @@ module.exports = {
     });
   },
 };
-
-
