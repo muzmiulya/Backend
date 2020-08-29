@@ -1,10 +1,11 @@
 const {
   getAllHistory,
   getHistoryById,
-  joinHistory,
-  getHistoryPerDay,
+  joinedHistory,
+  getRecentHistory,
   getTodayIncome,
   getOderCount,
+  getyearlyIncome,
   deleteHistory,
 } = require("../model/history");
 
@@ -37,49 +38,52 @@ module.exports = {
       return helper.response(response, 400, "Bad Request", error);
     }
   },
-  joinHistory: async (request, response) => {
-    try {
-      const result = await joinHistory();
-      return helper.response(
-        response,
-        200,
-        "Sukses Get Joined History",
-        result
-      );
-      // console.log(result)
-    } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
-      // console.log(error)
-    }
-  },
-  getHistoryPerDay: async (request, response) => {
-    let { date, interval } = request.query;
-    try {
-      // const result2 = await joinHistory();
-      const result = await getHistoryPerDay(date, interval);
-      // const setId = {
-      //  history_id: result.history_id
-      // }
 
-      // const setData = {
-      //   history_id: result.history_id,
-      //   history_invoices: result.history_invoices,
-      //   history_subtotal: result.history_subtotal,
-      //   history_created_at: result.history_created_at,
-      //   product_name: result2.product_name,
-      //   purchase_qty: result2.purchase_qty,
-      // };
-      // return helper.response(response, 200, "Sukses Get Per Day", result);
-      console.log(result);
+  getHistoryPerDay: async (request, response) => {
+    try {
+      const result = await getRecentHistory();
+      const ids = result.map((value) => {
+        return value.history_id;
+      });
+      const id = ids.find(Number);
+      const joinHistory = await joinedHistory(id);
+      const purchase = joinHistory.map((value) => {
+        return value.product_name + " " + "x" + value.purchase_qty;
+      });
+      const orderer = purchase.toString();
+      const mapped = joinHistory.map((value) => {
+        return (setData = {
+          history_invoices: value.history_invoices,
+          history_created_at: value.history_created_at,
+          history_subtotal: value.history_subtotal,
+        });
+      });
+      const dataSet = {
+        history_invoices: "#" + mapped[0].history_invoices,
+        history_created_at: mapped[0].history_created_at.toLocaleString(
+          "default",
+          {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }
+        ),
+        cashier: "Cashier 1",
+        orders: orderer,
+        history_subtotal: "Rp. " + mapped[0].history_subtotal,
+      };
+      return helper.response(response, 200, "Sukses Get Per Day", dataSet);
+      // console.log(dataSet);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
+      // console.log(error);
     }
   },
   getTodayIncome: async (request, response) => {
     try {
       const result = await getTodayIncome();
 
-      return helper.response(response, 200, "Sukses Get Income", result);
+      return helper.response(response, 200, "Sukses Get Today Income", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -88,7 +92,16 @@ module.exports = {
     try {
       const result = await getOderCount();
 
-      return helper.response(response, 200, "Sukses Get History", result);
+      return helper.response(response, 200, "Sukses Get Count", result);
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
+    }
+  },
+  getyearlyIncome: async (request, response) => {
+    try {
+      const result = await getyearlyIncome();
+
+      return helper.response(response, 200, "Sukses Get Yearly Income", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
