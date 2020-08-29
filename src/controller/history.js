@@ -6,6 +6,7 @@ const {
   getTodayIncome,
   getOderCount,
   getyearlyIncome,
+  getChartMonthly,
   deleteHistory,
 } = require("../model/history");
 
@@ -104,6 +105,32 @@ module.exports = {
       return helper.response(response, 200, "Sukses Get Yearly Income", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
+    }
+  },
+  getChartMonthly: async (request, response) => {
+    try {
+      const result = await getChartMonthly();
+      const mapped = result.map((value) => {
+        return (setData = {
+          history_created_at: value.historyDate.getDate(),
+          history_subtotal: value.historySub,
+        });
+      });
+      const reduced = mapped.reduce((acc, item) => {
+        acc[item.history_created_at] = item.history_subtotal;
+        return acc;
+      }, {});
+
+      return helper.response(
+        response,
+        200,
+        "Sukses Get Chart Monthly",
+        reduced
+      );
+      // console.log(reduced);
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
+      // console.log(error);
     }
   },
   deleteHistory: async (request, response) => {

@@ -92,6 +92,16 @@ module.exports = {
       );
     });
   },
+  getChartMonthly: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT DATE(history_created_at) AS historyDate, sum(history_subtotal) AS historySub FROM history WHERE MONTH(history_created_at) = MONTH(NOW()) AND YEAR(history_created_at) = YEAR(NOW()) GROUP BY DATE(history_created_at)",
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
   deleteHistory: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(

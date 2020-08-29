@@ -6,6 +6,7 @@ const {
   getTodayIncome,
   getOderCount,
   getyearlyIncome,
+  getChartMonthly,
   deleteHistory,
 } = require("../controller/history");
 
@@ -15,6 +16,7 @@ router.get("/days/days", getHistoryPerDay);
 router.get("/income/today", getTodayIncome);
 router.get("/order/count", getOderCount);
 router.get("/income/year", getyearlyIncome);
+router.get("/chart/monthly", getChartMonthly);
 
 router.delete("/:id", deleteHistory);
 
