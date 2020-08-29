@@ -83,8 +83,22 @@ module.exports = {
   getTodayIncome: async (request, response) => {
     try {
       const result = await getTodayIncome();
-
-      return helper.response(response, 200, "Sukses Get Today Income", result);
+      if (result.length > 0) {
+        return helper.response(
+          response,
+          200,
+          "Sukses Get Today Income",
+          result
+        );
+      } else {
+        result = 0;
+        return helper.response(
+          response,
+          200,
+          "Sukses Get Today Income",
+          result
+        );
+      }
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -92,8 +106,12 @@ module.exports = {
   getOderCount: async (request, response) => {
     try {
       const result = await getOderCount();
-
-      return helper.response(response, 200, "Sukses Get Count", result);
+      if (result.length > 0) {
+        return helper.response(response, 200, "Sukses Get Count", result);
+      } else {
+        result = 0;
+        return helper.response(response, 200, "Sukses Get Count", result);
+      }
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -101,8 +119,22 @@ module.exports = {
   getyearlyIncome: async (request, response) => {
     try {
       const result = await getyearlyIncome();
-
-      return helper.response(response, 200, "Sukses Get Yearly Income", result);
+      if (result.length > 0) {
+        return helper.response(
+          response,
+          200,
+          "Sukses Get Yearly Income",
+          result
+        );
+      } else {
+        result = 0;
+        return helper.response(
+          response,
+          200,
+          "Sukses Get Yearly Income",
+          result
+        );
+      }
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }

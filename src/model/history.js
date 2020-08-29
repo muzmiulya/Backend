@@ -85,7 +85,7 @@ module.exports = {
   getyearlyIncome: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT SUM(history_subtotal) AS yearly From history WHERE YEARWEEK(history_created_at) = YEARWEEK(NOW())",
+        "SELECT SUM(history_subtotal) AS yearly From history WHERE YEAR(history_created_at) = YEAR(NOW())",
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
         }
