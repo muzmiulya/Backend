@@ -83,22 +83,16 @@ module.exports = {
   getTodayIncome: async (request, response) => {
     try {
       const result = await getTodayIncome();
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          "Sukses Get Today Income",
-          result
-        );
-      } else {
-        result = 0;
-        return helper.response(
-          response,
-          200,
-          "Sukses Get Today Income",
-          result
-        );
+      const mapped = result.map((value) => {
+        return value.income;
+      });
+      const result2 = mapped[0];
+      if (result2 === undefined || result2 === null || result2 === "") {
+        result2 = 0;
       }
+
+      console.log(result2);
+      return helper.response(response, 200, "Sukses Get Today Income", result2);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -106,12 +100,16 @@ module.exports = {
   getOderCount: async (request, response) => {
     try {
       const result = await getOderCount();
-      if (result.length > 0) {
-        return helper.response(response, 200, "Sukses Get Count", result);
-      } else {
-        result = 0;
-        return helper.response(response, 200, "Sukses Get Count", result);
+      const mapped = result.map((value) => {
+        return value.orders;
+      });
+      const result2 = mapped[0];
+      if (result2 === undefined || result2 === null || result2 === "") {
+        result2 = 0;
       }
+
+      console.log(result2);
+      return helper.response(response, 200, "Sukses Get Count", result2);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -119,22 +117,21 @@ module.exports = {
   getyearlyIncome: async (request, response) => {
     try {
       const result = await getyearlyIncome();
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          "Sukses Get Yearly Income",
-          result
-        );
-      } else {
-        result = 0;
-        return helper.response(
-          response,
-          200,
-          "Sukses Get Yearly Income",
-          result
-        );
+      const mapped = result.map((value) => {
+        return value.yearly;
+      });
+      const result2 = mapped[0];
+      if (result2 === undefined || result2 === null || result2 === "") {
+        result2 = 0;
       }
+
+      console.log(result2);
+      return helper.response(
+        response,
+        200,
+        "Sukses Get Yearly Income",
+        result2
+      );
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
