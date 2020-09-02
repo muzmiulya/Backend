@@ -9,6 +9,12 @@ const {
   getChartMonthly,
   deleteHistory,
 } = require("../controller/history");
+// const {
+//   getProductByIdRedis,
+//   getAllProductRedis,
+//   getProductByNameRedis,
+//   clearDataProductRedis,
+// } = require("../middleware/redis");
 
 router.get("/", getAllHistory);
 router.get("/:id", getHistoryById);

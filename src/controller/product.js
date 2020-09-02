@@ -10,6 +10,8 @@ const {
 const qs = require("querystring");
 const helper = require("../helper/index.js");
 const { request } = require("express");
+const redis = require("redis");
+const client = redis.createClient();
 
 const getPrevLink = (page, currentQuery) => {
   if (page > 1) {
@@ -69,6 +71,12 @@ module.exports = {
     };
     try {
       const result = await getProduct(sort, limit, offset);
+      client.set(
+        `getproduct:${JSON.stringify(request.query)}`,
+        JSON.stringify(result)
+      );
+      // proses data result ke dalam redis
+      // client.set('getproduct:page=2&limit=1','')
       return helper.response(
         response,
         200,
@@ -107,6 +115,7 @@ module.exports = {
     try {
       const { id } = request.params;
       const result = await getProductById(id);
+      client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result));
       if (result.length > 0) {
         return helper.response(
           response,
@@ -141,12 +150,6 @@ module.exports = {
     ) {
       return helper.response(response, 404, "product_price must be filled");
     } else if (
-      request.body.product_picture === undefined ||
-      request.body.product_picture === null ||
-      request.body.product_picture === ""
-    ) {
-      return helper.response(response, 404, "product_picture must be filled");
-    } else if (
       request.body.product_status === undefined ||
       request.body.product_status === null ||
       request.body.product_status === ""
@@ -154,14 +157,17 @@ module.exports = {
       return helper.response(response, 404, "product_status must be filled");
     }
     try {
+      console.log(request.file);
       const setData = {
         category_id: request.body.category_id,
         product_name: request.body.product_name,
         product_price: request.body.product_price,
-        product_picture: request.body.product_picture,
+        product_picture:
+          request.file === undefined ? "" : request.file.filename,
         product_created_at: new Date(),
         product_status: request.body.product_status,
       };
+      console.log(setData);
       const result = await postProduct(setData);
       // console.log(setData);
       return helper.response(response, 200, "Success Product Posted", result);
@@ -172,37 +178,37 @@ module.exports = {
     }
   },
   patchProduct: async (request, response) => {
-    if (
-      request.body.category_id === undefined ||
-      request.body.category_id === null ||
-      request.body.category_id === ""
-    ) {
-      return helper.response(response, 404, "category_id must be filled");
-    } else if (
-      request.body.product_name === undefined ||
-      request.body.product_name === null ||
-      request.body.product_name === ""
-    ) {
-      return helper.response(response, 404, "product_name must be filled");
-    } else if (
-      request.body.product_price === undefined ||
-      request.body.product_price === null ||
-      request.body.product_price === ""
-    ) {
-      return helper.response(response, 404, "product_price must be filled");
-    } else if (
-      request.body.product_picture === undefined ||
-      request.body.product_picture === null ||
-      request.body.product_picture === ""
-    ) {
-      return helper.response(response, 404, "product_picture must be filled");
-    } else if (
-      request.body.product_status === undefined ||
-      request.body.product_status === null ||
-      request.body.product_status === ""
-    ) {
-      return helper.response(response, 404, "product_status must be filled");
-    }
+    // if (
+    //   request.body.category_id === undefined ||
+    //   request.body.category_id === null ||
+    //   request.body.category_id === ""
+    // ) {
+    //   return helper.response(response, 404, "category_id must be filled");
+    // } else if (
+    //   request.body.product_name === undefined ||
+    //   request.body.product_name === null ||
+    //   request.body.product_name === ""
+    // ) {
+    //   return helper.response(response, 404, "product_name must be filled");
+    // } else if (
+    //   request.body.product_price === undefined ||
+    //   request.body.product_price === null ||
+    //   request.body.product_price === ""
+    // ) {
+    //   return helper.response(response, 404, "product_price must be filled");
+    // } else if (
+    //   request.body.product_picture === undefined ||
+    //   request.body.product_picture === null ||
+    //   request.body.product_picture === ""
+    // ) {
+    //   return helper.response(response, 404, "product_picture must be filled");
+    // } else if (
+    //   request.body.product_status === undefined ||
+    //   request.body.product_status === null ||
+    //   request.body.product_status === ""
+    // ) {
+    //   return helper.response(response, 404, "product_status must be filled");
+    // }
     try {
       const { id } = request.params;
       const {
