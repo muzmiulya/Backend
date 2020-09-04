@@ -1,31 +1,37 @@
 const bcrypt = require("bcrypt");
 const helper = require("../helper/index");
 const jwt = require("jsonwebtoken");
-const { postUser, checkUser } = require("../model/users");
+const { isUserExist, postUser, checkUser } = require("../model/users");
 
 module.exports = {
   registerUser: async (request, response) => {
     console.log(request.body);
     const { user_email, user_password, user_name } = request.body;
+    console.log(user_password);
+    if (user_password.length < 8) {
+      return helper.response(response, 400, "Minimum 8 Characters");
+    }
     const salt = bcrypt.genSaltSync(10);
     const encryptPassword = bcrypt.hashSync(user_password, salt);
-    // console.log("user Password = " + user_password);
-    // console.log("user Password Bcrypt = " + encryptPassword);
-    // kondisi jika email sama tidak bisa
-    //model ngecek apakag emailnya ada di database, jika ada dibuat response jika tidak
-    const setData = {
-      user_email: user_email,
-      user_password: encryptPassword,
-      user_name: user_name,
-      user_role: 2,
-      user_status: 0,
-      user_created_at: new Date(),
-    };
-    try {
-      const result = await postUser(setData);
-      return helper.response(response, 200, "Success Register User", result);
-    } catch (error) {
-      return helper.response(response, 400, "Bad Request");
+    const userInDatabase = await isUserExist(user_email);
+    if (userInDatabase.length > 0) {
+      return helper.response(response, 400, "Email Has Already Been Taken");
+    } else if (userInDatabase.length <= 0) {
+      const setData = {
+        user_email: user_email,
+        user_password: encryptPassword,
+        user_name: user_name,
+        user_role: 2,
+        user_status: 0,
+        user_created_at: new Date(),
+      };
+      try {
+        const result = await postUser(setData);
+        return helper.response(response, 200, "Success Register User", result);
+      } catch (error) {
+        console.log(error);
+        return helper.response(response, 400, "Bad Request");
+      }
     }
   },
   loginUser: async (request, response) => {
@@ -56,9 +62,19 @@ module.exports = {
             user_role,
             user_status,
           };
-          const token = jwt.sign(payload, "RAHASIA", { expiresIn: "48h" });
-          payload = { ...payload, token };
-          return helper.response(response, 200, "Success Login", payload);
+          if (user_status == 0) {
+            return helper.response(
+              response,
+              400,
+              "Your Account is not Active",
+              payload
+            );
+          } else {
+            const token = jwt.sign(payload, "RAHASIA", { expiresIn: "24h" });
+            payload = { ...payload, token };
+            return helper.response(response, 200, "Success Login", payload);
+          }
+          // console.log(user_status);
         } else {
           return helper.response(response, 400, "Wrong Password !");
         }

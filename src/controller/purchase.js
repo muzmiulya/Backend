@@ -6,42 +6,41 @@ const {
   postPurchase,
   getSubTotal,
   patchHistory,
-  deletePurchase,
 } = require("../model/purchase");
 
 const helper = require("../helper/index");
 
 module.exports = {
-  getAllPurchase: async (request, response) => {
-    try {
-      const result = await getAllPurchase();
-      return helper.response(response, 200, "Sukses Get Purchase", result);
-    } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
-    }
-  },
-  getPurchaseById: async (request, response) => {
-    try {
-      const { id } = request.params;
-      const result = await getPurchaseById(id);
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          "Success Get Purchase By Id",
-          result
-        );
-      } else {
-        return helper.response(
-          response,
-          404,
-          `Purchase By Id: ${id} Not Found`
-        );
-      }
-    } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
-    }
-  },
+  // getAllPurchase: async (request, response) => {
+  //   try {
+  //     const result = await getAllPurchase();
+  //     return helper.response(response, 200, "Sukses Get Purchase", result);
+  //   } catch (error) {
+  //     return helper.response(response, 400, "Bad Request", error);
+  //   }
+  // },
+  // getPurchaseById: async (request, response) => {
+  //   try {
+  //     const { id } = request.params;
+  //     const result = await getPurchaseById(id);
+  //     if (result.length > 0) {
+  //       return helper.response(
+  //         response,
+  //         200,
+  //         "Success Get Purchase By Id",
+  //         result
+  //       );
+  //     } else {
+  //       return helper.response(
+  //         response,
+  //         404,
+  //         `Purchase By Id: ${id} Not Found`
+  //       );
+  //     }
+  //   } catch (error) {
+  //     return helper.response(response, 400, "Bad Request", error);
+  //   }
+  // },
   postOrder: async (request, response) => {
     if (
       request.body === undefined ||
@@ -118,16 +117,6 @@ module.exports = {
         history_subtotal: result5.history_subtotal,
       };
       return helper.response(response, 200, "Success Order Posted", data);
-    } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
-    }
-  },
-  deletePurchase: async (request, response) => {
-    try {
-      const { id } = request.params;
-      const result = await deletePurchase(id);
-      console.log(result);
-      return helper.response(response, 200, "Success Purchase Deleted", result);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
     }

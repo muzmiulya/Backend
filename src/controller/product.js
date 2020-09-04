@@ -11,6 +11,7 @@ const qs = require("querystring");
 const helper = require("../helper/index.js");
 const { request } = require("express");
 const redis = require("redis");
+const fs = require("fs");
 const client = redis.createClient();
 
 const getPrevLink = (page, currentQuery) => {
@@ -71,12 +72,12 @@ module.exports = {
     };
     try {
       const result = await getProduct(sort, limit, offset);
-      client.set(
-        `getproduct:${JSON.stringify(request.query)}`,
-        JSON.stringify(result)
+      const newResult = { result, pageInfo };
+      client.setex(
+        `getproductall:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify(newResult)
       );
-      // proses data result ke dalam redis
-      // client.set('getproduct:page=2&limit=1','')
       return helper.response(
         response,
         200,
@@ -84,15 +85,12 @@ module.exports = {
         result,
         pageInfo
       );
-      // console.log(result, pageInfo)
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error)
     }
   },
   getAllProductByName: async (request, response) => {
     let { search, limit } = request.query;
-
     if (search === undefined || search === null || search === "") {
       search = "%";
     } else {
@@ -103,20 +101,25 @@ module.exports = {
     } else {
       limit = parseInt(limit);
     }
-
     try {
       const result = await getProductByName(search, limit);
+      client.setex(
+        `getproductbyname:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify(result)
+      );
       return helper.response(response, 200, "Success Get Product Name", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
+      // console.log(error);
     }
   },
   getProductById: async (request, response) => {
     try {
       const { id } = request.params;
       const result = await getProductById(id);
-      client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result));
       if (result.length > 0) {
+        client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result));
         return helper.response(
           response,
           200,
@@ -157,7 +160,7 @@ module.exports = {
       return helper.response(response, 404, "product_status must be filled");
     }
     try {
-      console.log(request.file);
+      // console.log(request.file);
       const setData = {
         category_id: request.body.category_id,
         product_name: request.body.product_name,
@@ -167,67 +170,71 @@ module.exports = {
         product_created_at: new Date(),
         product_status: request.body.product_status,
       };
-      console.log(setData);
+
       const result = await postProduct(setData);
-      // console.log(setData);
       return helper.response(response, 200, "Success Product Posted", result);
-      console.log(result);
+      // console.log(setData);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
       // console.log(error);
     }
   },
   patchProduct: async (request, response) => {
-    // if (
-    //   request.body.category_id === undefined ||
-    //   request.body.category_id === null ||
-    //   request.body.category_id === ""
-    // ) {
-    //   return helper.response(response, 404, "category_id must be filled");
-    // } else if (
-    //   request.body.product_name === undefined ||
-    //   request.body.product_name === null ||
-    //   request.body.product_name === ""
-    // ) {
-    //   return helper.response(response, 404, "product_name must be filled");
-    // } else if (
-    //   request.body.product_price === undefined ||
-    //   request.body.product_price === null ||
-    //   request.body.product_price === ""
-    // ) {
-    //   return helper.response(response, 404, "product_price must be filled");
-    // } else if (
-    //   request.body.product_picture === undefined ||
-    //   request.body.product_picture === null ||
-    //   request.body.product_picture === ""
-    // ) {
-    //   return helper.response(response, 404, "product_picture must be filled");
-    // } else if (
-    //   request.body.product_status === undefined ||
-    //   request.body.product_status === null ||
-    //   request.body.product_status === ""
-    // ) {
-    //   return helper.response(response, 404, "product_status must be filled");
-    // }
+    if (
+      request.body.category_id === undefined ||
+      request.body.category_id === null ||
+      request.body.category_id === ""
+    ) {
+      return helper.response(response, 404, "category_id must be filled");
+    } else if (
+      request.body.product_name === undefined ||
+      request.body.product_name === null ||
+      request.body.product_name === ""
+    ) {
+      return helper.response(response, 404, "product_name must be filled");
+    } else if (
+      request.body.product_price === undefined ||
+      request.body.product_price === null ||
+      request.body.product_price === ""
+    ) {
+      return helper.response(response, 404, "product_price must be filled");
+    } else if (
+      request.body.product_status === undefined ||
+      request.body.product_status === null ||
+      request.body.product_status === ""
+    ) {
+      return helper.response(response, 404, "product_status must be filled");
+    }
     try {
       const { id } = request.params;
       const {
         category_id,
         product_name,
         product_price,
-        product_picture,
         product_status,
       } = request.body;
       const setData = {
         category_id,
         product_name,
         product_price,
-        product_picture,
+        product_picture:
+          request.file === undefined ? "" : request.file.filename,
         product_updated_at: new Date(),
         product_status,
       };
       const checkId = await getProductById(id);
       if (checkId.length > 0) {
+        const getProductPicture = checkId.map((value) => {
+          return value.product_picture;
+        });
+        const justPicture = getProductPicture[0];
+        const path = `./uploads/${justPicture}`;
+        fs.unlink(path, (err) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+        });
         const result = await patchProduct(setData, id);
         return helper.response(
           response,
@@ -235,6 +242,7 @@ module.exports = {
           "Success Product Updated",
           result
         );
+        // console.log(result);
       } else {
         return helper.response(response, 404, `Product By Id: ${id} Not Found`);
       }
@@ -245,11 +253,25 @@ module.exports = {
   deleteProduct: async (request, response) => {
     try {
       const { id } = request.params;
+      const getId = await getProductById(id);
+      const getProductPicture = getId.map((value) => {
+        return value.product_picture;
+      });
+      const justPicture = getProductPicture[0];
+      const path = `./uploads/${justPicture}`;
+      fs.unlink(path, (err) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+      });
+      // console.log(justPicture);
       const result = await deleteProduct(id);
-      console.log(result);
+
       return helper.response(response, 200, "Success Product Deleted", result);
     } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
+      // return helper.response(response, 404, "Bad Request", error);
+      console.log(error);
     }
   },
 };

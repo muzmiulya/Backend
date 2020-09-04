@@ -7,23 +7,39 @@ const {
   getOderCount,
   getyearlyIncome,
   getChartMonthly,
-  deleteHistory,
 } = require("../controller/history");
-// const {
-//   getProductByIdRedis,
-//   getAllProductRedis,
-//   getProductByNameRedis,
-//   clearDataProductRedis,
-// } = require("../middleware/redis");
+const { authorization } = require("../middleware/auth");
+const {
+  getAllHistoryRedis,
+  getHistoryByIdRedis,
+  getHistoryPerDayRedis,
+  getTodayIncomeRedis,
+  getOderCountRedis,
+  getyearlyIncomeRedis,
+  // getChartMonthlyRedis,
+} = require("../middleware/redis");
 
-router.get("/", getAllHistory);
-router.get("/:id", getHistoryById);
-router.get("/days/days", getHistoryPerDay);
-router.get("/income/today", getTodayIncome);
-router.get("/order/count", getOderCount);
-router.get("/income/year", getyearlyIncome);
-router.get("/chart/monthly", getChartMonthly);
-
-router.delete("/:id", deleteHistory);
+router.get("/", authorization, getAllHistoryRedis, getAllHistory);
+router.get("/:id", authorization, getHistoryByIdRedis, getHistoryById);
+router.get(
+  "/days/days",
+  authorization,
+  getHistoryPerDayRedis,
+  getHistoryPerDay
+);
+router.get("/income/today", authorization, getTodayIncomeRedis, getTodayIncome);
+router.get("/order/count", authorization, getOderCountRedis, getOderCount);
+router.get(
+  "/income/year",
+  authorization,
+  getyearlyIncomeRedis,
+  getyearlyIncome
+);
+router.get(
+  "/chart/monthly",
+  authorization,
+  // getChartMonthlyRedis,
+  getChartMonthly
+);
 
 module.exports = router;

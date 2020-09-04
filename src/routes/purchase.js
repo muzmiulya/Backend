@@ -1,17 +1,15 @@
 const router = require("express").Router();
 const {
-  getAllPurchase,
-  getPurchaseById,
+  // getAllPurchase,
+  // getPurchaseById,
   postOrder,
-  deletePurchase,
 } = require("../controller/purchase");
+const { authorization } = require("../middleware/auth");
+const { clearDataProductRedis } = require("../middleware/redis");
 
-router.get("/", getAllPurchase);
-router.get("/:id", getPurchaseById);
+// router.get("/", getAllPurchase);
+// router.get("/:id", getPurchaseById);
 
-router.post("/", postOrder);
-
-router.delete("/:id", deletePurchase);
+router.post("/", authorization, clearDataProductRedis, postOrder);
 
 module.exports = router;
-

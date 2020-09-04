@@ -1,8 +1,6 @@
 const {
   getAllHistory,
   getHistoryById,
-  // joinedHistory,
-  // getRecentHistory,
   getHistoryPerDay,
   getTodayIncome,
   comparisonTodayIncome,
@@ -11,9 +9,10 @@ const {
   getyearlyIncome,
   comparisonLastYearIncome,
   getChartMonthly,
-  getChartOtherMonth,
-  deleteHistory,
 } = require("../model/history");
+const { request } = require("express");
+const redis = require("redis");
+const client = redis.createClient();
 
 const helper = require("../helper/index");
 
@@ -21,9 +20,11 @@ module.exports = {
   getAllHistory: async (request, response) => {
     try {
       const result = await getAllHistory();
+      client.set(`getallhistory`, JSON.stringify(result));
       return helper.response(response, 200, "Sukses Get History", result);
     } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
+      // return helper.response(response, 400, "Bad Request", error);
+      console.log(error);
     }
   },
   getHistoryById: async (request, response) => {
@@ -31,6 +32,7 @@ module.exports = {
       const { id } = request.params;
       const result = await getHistoryById(id);
       if (result.length > 0) {
+        client.setex(`gethistorybyid:${id}`, 3600, JSON.stringify(result));
         return helper.response(
           response,
           200,
@@ -94,6 +96,10 @@ module.exports = {
           history_subtotal: value.history_subtotal,
         });
       });
+      client.set(
+        `gethistoryperday:${JSON.stringify(request.query)}`,
+        JSON.stringify(results)
+      );
       // console.log(results);
       return helper.response(response, 200, "Sukses Get Per Day", results);
     } catch (error) {
@@ -140,6 +146,7 @@ module.exports = {
         incomes: result2,
         incomeYesterday,
       };
+      client.set(`gettodayincome`, JSON.stringify(setData));
       // console.log(setData);
       return helper.response(response, 200, "Sukses Get Today Income", setData);
     } catch (error) {
@@ -177,6 +184,7 @@ module.exports = {
         countThisWeek: result2,
         countLastWeek,
       };
+      client.set(`getordercount`, JSON.stringify(setData));
       return helper.response(response, 200, "Sukses Get Count", setData);
       // console.log(setData);
     } catch (error) {
@@ -222,16 +230,23 @@ module.exports = {
         countLastYear,
       };
       // console.log(setData);
-      return helper.response(response, 200, "Sukses Get Count", setData);
+      client.set(`getyearincome`, JSON.stringify(setData));
+      return helper.response(
+        response,
+        200,
+        "Sukses Get Yearly Income",
+        setData
+      );
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
       // console.log(error);
     }
   },
   getChartMonthly: async (request, response) => {
-    // let { months } = request.query;
+    let { months } = request.query;
+    // MONTH(NOW())
     try {
-      const result = await getChartMonthly();
+      const result = await getChartMonthly(months);
       const mapped = result.map((value) => {
         return (setData = {
           history_created_at: value.historyDate.getDate(),
@@ -242,7 +257,8 @@ module.exports = {
         acc[item.history_created_at] = item.history_subtotal;
         return acc;
       }, {});
-      // const otherMonth = await getChartOtherMonth(months);
+      console.log(reduced);
+      // client.set(`getchartmonthly`, JSON.stringify(reduced));
       return helper.response(
         response,
         200,
@@ -251,18 +267,8 @@ module.exports = {
       );
       // console.log(otherMonth);
     } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
-    }
-  },
-  deleteHistory: async (request, response) => {
-    try {
-      const { id } = request.params;
-      const result = await deleteHistory(id);
-      console.log(result);
-      return helper.response(response, 200, "Success History Deleted", result);
-    } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
+      // return helper.response(response, 400, "Bad Request", error);
+      console.log(error);
     }
   },
 };

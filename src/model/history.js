@@ -123,17 +123,7 @@ module.exports = {
       );
     });
   },
-  getChartMonthly: () => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT DATE(history_created_at) AS historyDate, sum(history_subtotal) AS historySub FROM history WHERE MONTH(history_created_at) = MONTH(NOW()) AND YEAR(history_created_at) = YEAR(NOW()) GROUP BY DATE(history_created_at)",
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
-        }
-      );
-    });
-  },
-  getChartOtherMonth: (months) => {
+  getChartMonthly: (months) => {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT DATE(history_created_at) AS historyDate, sum(history_subtotal) AS historySub FROM history WHERE MONTH(history_created_at) = ${months} AND YEAR(history_created_at) = YEAR(NOW()) GROUP BY DATE(history_created_at)`,
@@ -143,22 +133,14 @@ module.exports = {
       );
     });
   },
-  deleteHistory: (id) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "DELETE FROM history WHERE history_id = ?",
-        id,
-        (error, result) => {
-          if (!error) {
-            const newResult = {
-              id: id,
-            };
-            resolve(newResult);
-          } else {
-            reject(new Error(error));
-          }
-        }
-      );
-    });
-  },
+  // getChartOtherMonth: (months) => {
+  //   return new Promise((resolve, reject) => {
+  //     connection.query(
+  //       `SELECT DATE(history_created_at) AS historyDate, sum(history_subtotal) AS historySub FROM history WHERE MONTH(history_created_at) = ${months} AND YEAR(history_created_at) = YEAR(NOW()) GROUP BY DATE(history_created_at)`,
+  //       (error, result) => {
+  //         !error ? resolve(result) : reject(new Error(error));
+  //       }
+  //     );
+  //   });
+  // },
 };
