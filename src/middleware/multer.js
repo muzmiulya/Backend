@@ -15,8 +15,8 @@ const storage = multer.diskStorage({
 const fileFilter = (request, file, callback) => {
   console.log(file);
   if (
-    file.mimetype == "image/png" &&
-    file.mimetype == "image/jpg" &&
+    file.mimetype == "image/png" ||
+    file.mimetype == "image/jpg" ||
     file.mimetype == "image/jpeg"
   ) {
     callback(null, true);
@@ -24,31 +24,19 @@ const fileFilter = (request, file, callback) => {
     return callback(new Error("Only images files are allowed"), false);
   }
 };
-const limits = { fileSize: 10485760 };
+const limits = { fileSize: 1024 * 1024 };
 let upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: limits,
-  //   function (req, file, callback) {
-  //     if (
-  //       file.mimetype !== "image/png" &&
-  //       file.mimetype !== "image/jpg" &&
-  //       file.mimetype !== "image/jpeg" &&
-  //       file.mimetype !== "image/gif"
-  //     ) {
-  //       return callback(new Error("Only images files are allowed"));
-  //     } else {
-  //       callback(null, true);
-  //     }
-  //   },
 }).single("product_picture");
 
 const uploadFilter = (request, response, next) => {
-  upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      return helper.response(response, 400, err.message);
-    } else if (err) {
-      return helper.response(response, 400, err.message);
+  upload(request, response, function (error) {
+    if (error instanceof multer.MulterError) {
+      return helper.response(response, 400, error.message);
+    } else if (error) {
+      return helper.response(response, 400, error.message);
     }
     next();
   });

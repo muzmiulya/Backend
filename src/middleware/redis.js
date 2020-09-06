@@ -69,7 +69,7 @@ module.exports = {
 
   // ============================================================================================
   getAllCategoryRedis: (request, response, next) => {
-    client.get(`getallcategory`, (error, result) => {
+    client.get(`getcategoryall`, (error, result) => {
       if (!error && result != null) {
         console.log("data ada di dalam redis");
         return helper.response(
@@ -103,7 +103,7 @@ module.exports = {
   },
   // ================================================================================
   getAllHistoryRedis: (request, response, next) => {
-    client.get(`getallhistory`, (error, result) => {
+    client.get(`gethistoryall`, (error, result) => {
       if (!error && result != null) {
         console.log("data ada di dalam redis");
         return helper.response(
@@ -155,7 +155,7 @@ module.exports = {
     );
   },
   getTodayIncomeRedis: (request, response, next) => {
-    client.get(`gettodayincome`, (error, result) => {
+    client.get(`gethistorytodayincome`, (error, result) => {
       if (!error && result != null) {
         console.log("data ada di dalam redis");
         return helper.response(
@@ -171,7 +171,7 @@ module.exports = {
     });
   },
   getOderCountRedis: (request, response, next) => {
-    client.get(`getordercount`, (error, result) => {
+    client.get(`gethistoryordercount`, (error, result) => {
       if (!error && result != null) {
         console.log("data ada di dalam redis");
         return helper.response(
@@ -187,7 +187,7 @@ module.exports = {
     });
   },
   getyearlyIncomeRedis: (request, response, next) => {
-    client.get(`getyearincome`, (error, result) => {
+    client.get(`gethistoryyearincome`, (error, result) => {
       if (!error && result != null) {
         console.log("data ada di dalam redis");
         return helper.response(
@@ -203,22 +203,25 @@ module.exports = {
     });
   },
   getChartMonthlyRedis: (request, response, next) => {
-    client.get(`getchartmonthly`, (error, result) => {
-      if (!error && result != null) {
-        console.log("data ada di dalam redis");
-        return helper.response(
-          response,
-          200,
-          "Sukses Get Chart Monthly",
-          JSON.parse(result)
-        );
-      } else {
-        console.log("data tidak ada di dalam redis");
-        next();
+    client.get(
+      `gethistorychartmonthly${JSON.stringify(request.query)}`,
+      (error, result) => {
+        if (!error && result != null) {
+          console.log("data ada di dalam redis");
+          return helper.response(
+            response,
+            200,
+            "Sukses Get Chart Monthly",
+            JSON.parse(result)
+          );
+        } else {
+          console.log("data tidak ada di dalam redis");
+          next();
+        }
       }
-    });
+    );
   },
-  //untuk clear key redis
+  // ===================================================================================
   clearDataProductRedis: (request, response, next) => {
     client.keys("getproduct*", (err, keys) => {
       if (keys.length > 0) {
@@ -228,9 +231,25 @@ module.exports = {
       }
       next();
     });
-    // client.flushall((error, result) => {
-    //   console.log(result);
-    // });
-    // next();
+  },
+  clearDataCategoryRedis: (request, response, next) => {
+    client.keys("getcategory*", (err, keys) => {
+      if (keys.length > 0) {
+        keys.forEach((value) => {
+          client.del(value);
+        });
+      }
+      next();
+    });
+  },
+  clearDataHistoryRedis: (request, response, next) => {
+    client.keys("gethistory*", (err, keys) => {
+      if (keys.length > 0) {
+        keys.forEach((value) => {
+          client.del(value);
+        });
+      }
+      next();
+    });
   },
 };

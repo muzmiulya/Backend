@@ -16,7 +16,7 @@ const {
   getTodayIncomeRedis,
   getOderCountRedis,
   getyearlyIncomeRedis,
-  // getChartMonthlyRedis,
+  getChartMonthlyRedis,
 } = require("../middleware/redis");
 
 router.get("/", authorization, getAllHistoryRedis, getAllHistory);
@@ -38,7 +38,7 @@ router.get(
 router.get(
   "/chart/monthly",
   authorization,
-  // getChartMonthlyRedis,
+  getChartMonthlyRedis,
   getChartMonthly
 );
 

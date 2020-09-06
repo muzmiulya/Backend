@@ -5,11 +5,11 @@ const {
   postOrder,
 } = require("../controller/purchase");
 const { authorization } = require("../middleware/auth");
-const { clearDataProductRedis } = require("../middleware/redis");
+const { clearDataHistoryRedis } = require("../middleware/redis");
 
 // router.get("/", getAllPurchase);
 // router.get("/:id", getPurchaseById);
 
-router.post("/", authorization, clearDataProductRedis, postOrder);
+router.post("/", authorization, clearDataHistoryRedis, postOrder);
 
 module.exports = router;

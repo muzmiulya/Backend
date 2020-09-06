@@ -20,11 +20,11 @@ module.exports = {
   getAllHistory: async (request, response) => {
     try {
       const result = await getAllHistory();
-      client.set(`getallhistory`, JSON.stringify(result));
+      client.set(`gethistoryall`, JSON.stringify(result));
       return helper.response(response, 200, "Sukses Get History", result);
     } catch (error) {
-      // return helper.response(response, 400, "Bad Request", error);
-      console.log(error);
+      return helper.response(response, 400, "Bad Request", error);
+      // console.log(error);
     }
   },
   getHistoryById: async (request, response) => {
@@ -124,29 +124,42 @@ module.exports = {
       const result2 = mapped[0];
       const incomeYes = await comparisonTodayIncome();
       const mapped2 = incomeYes.map((value) => {
-        return value.yesterdayIncome;
-      });
-
-      const mapped3 = mapped2.map((value) => {
-        if (value > result2) {
-          let values = value - result2;
-          let count = (values / value) * 100;
-          return "-" + count.toFixed(2);
-        } else if (value < result2) {
-          let values = result2 - value;
-          let count = (values / value) * 100;
-          return "+" + count.toFixed(2);
-        } else if ((value = result2)) {
-          let values = 0;
-          return "+" + values;
+        if (
+          value.yesterdayIncome === undefined ||
+          value.yesterdayIncome === null ||
+          value.yesterdayIncome === ""
+        ) {
+          return (value.yesterdayIncome = 0);
+        } else {
+          return value.yesterdayIncome;
         }
       });
-      const incomeYesterday = mapped3[0] + "%";
+      console.log(mapped2);
+      if (mapped2[0] == 0) {
+        incomeYesterday = "+" + result2 * 100 + "%";
+      } else {
+        const mapped3 = mapped2.map((value) => {
+          if (value > result2) {
+            let values = value - result2;
+            let count = (values / value) * 100;
+            return "-" + count.toFixed(2);
+          } else if (value < result2) {
+            let values = result2 - value;
+            let count = (values / value) * 100;
+            return "+" + count.toFixed(2);
+          } else if ((value = result2)) {
+            let values = 0;
+            return "+" + values;
+          }
+        });
+        incomeYesterday = mapped3[0] + "%";
+      }
+
       const setData = {
         incomes: result2,
         incomeYesterday,
       };
-      client.set(`gettodayincome`, JSON.stringify(setData));
+      client.set(`gethistorytodayincome`, JSON.stringify(setData));
       // console.log(setData);
       return helper.response(response, 200, "Sukses Get Today Income", setData);
     } catch (error) {
@@ -161,30 +174,44 @@ module.exports = {
         return value.orders;
       });
       const result2 = mapped[0];
+      console.log(mapped);
       const lastWeekOrder = await comparisonLastWeekOrders();
       const mapped2 = lastWeekOrder.map((value) => {
-        return value.lastWeekCount;
-      });
-      const mapped3 = mapped2.map((value) => {
-        if (value > result2) {
-          let values = value - result2;
-          let count = (values / value) * 100;
-          return "-" + count.toFixed(2);
-        } else if (value < result2) {
-          let values = result2 - value;
-          let count = (values / value) * 100;
-          return "+" + count.toFixed(2);
-        } else if ((value = result2)) {
-          let values = 0;
-          return "+" + values;
+        if (
+          value.lastWeekCount === undefined ||
+          value.lastWeekCount === null ||
+          value.lastWeekCount === ""
+        ) {
+          return (value.lastWeekCount = 0);
+        } else {
+          return value.lastWeekCount;
         }
       });
-      const countLastWeek = mapped3[0] + "%";
+      if (mapped2[0] == 0) {
+        countLastWeek = "+" + result2 * 100 + "%";
+      } else {
+        const mapped3 = mapped2.map((value) => {
+          if (value > result2) {
+            let values = value - result2;
+            let count = (values / value) * 100;
+            return "-" + count.toFixed(2);
+          } else if (value < result2) {
+            let values = result2 - value;
+            let count = (values / value) * 100;
+            return "+" + count.toFixed(2);
+          } else if ((value = result2)) {
+            let values = 0;
+            return "+" + values;
+          }
+        });
+        countLastWeek = mapped3[0] + "%";
+      }
+
       const setData = {
         countThisWeek: result2,
         countLastWeek,
       };
-      client.set(`getordercount`, JSON.stringify(setData));
+      client.set(`gethistoryordercount`, JSON.stringify(setData));
       return helper.response(response, 200, "Sukses Get Count", setData);
       // console.log(setData);
     } catch (error) {
@@ -205,32 +232,37 @@ module.exports = {
           value.lastYearIncome === null ||
           value.lastYearIncome === ""
         ) {
-          return (value.lastYearIncome = 1);
+          return (value.lastYearIncome = 0);
         } else {
           return value.lastYearIncome;
         }
       });
-      const mapped3 = mapped2.map((value) => {
-        if (value > result2) {
-          let values = value - result2;
-          let count = (values / value) * 100;
-          return "-" + count.toFixed(2);
-        } else if (value < result2) {
-          let values = result2 - value;
-          let count = (values / value) * 100;
-          return "+" + count.toFixed(2);
-        } else if ((value = result2)) {
-          let values = 0;
-          return "+" + values;
-        }
-      });
-      const countLastYear = mapped3[0] + "%";
+
+      if (mapped2[0] == 0) {
+        countLastYear = "+" + result2 * 100 + "%";
+      } else {
+        const mapped3 = mapped2.map((value) => {
+          if (value > result2) {
+            let values = value - result2;
+            let count = (values / value) * 100;
+            return "-" + count.toFixed(2);
+          } else if (value < result2) {
+            let values = result2 - value;
+            let count = (values / value) * 100;
+            return "+" + count.toFixed(2);
+          } else if ((value = result2)) {
+            let values = 0;
+            return "+" + values;
+          }
+        });
+        countLastYear = mapped3[0] + "%";
+      }
       const setData = {
         countThisYear: result2,
         countLastYear,
       };
       // console.log(setData);
-      client.set(`getyearincome`, JSON.stringify(setData));
+      client.set(`gethistoryyearincome`, JSON.stringify(setData));
       return helper.response(
         response,
         200,
@@ -258,7 +290,10 @@ module.exports = {
         return acc;
       }, {});
       console.log(reduced);
-      // client.set(`getchartmonthly`, JSON.stringify(reduced));
+      client.set(
+        `gethistorychartmonthly${JSON.stringify(request.query)}`,
+        JSON.stringify(reduced)
+      );
       return helper.response(
         response,
         200,
@@ -267,8 +302,8 @@ module.exports = {
       );
       // console.log(otherMonth);
     } catch (error) {
-      // return helper.response(response, 400, "Bad Request", error);
-      console.log(error);
+      return helper.response(response, 400, "Bad Request", error);
+      // console.log(error);
     }
   },
 };

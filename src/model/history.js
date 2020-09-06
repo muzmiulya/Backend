@@ -8,18 +8,6 @@ module.exports = {
       });
     });
   },
-
-  // joinedHistory: (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query(
-  //       "SELECT history.history_id, history.history_invoices, purchase.purchase_id, purchase.product_id, product.product_name, purchase.purchase_qty, purchase.purchase_total, history.history_subtotal, history.history_created_at FROM history INNER JOIN purchase ON history.history_id = purchase.history_id INNER JOIN product ON purchase.product_id = product.product_id WHERE history.history_id = ?",
-  //       id,
-  //       (error, result) => {
-  //         !error ? resolve(result) : reject(new Error(error));
-  //       }
-  //     );
-  //   });
-  // },
   getHistoryById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -31,16 +19,6 @@ module.exports = {
       );
     });
   },
-  // getRecentHistory: () => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query(
-  //       `SELECT * FROM history WHERE history_id IN (SELECT history_id FROM history WHERE history_created_at = (SELECT MAX(history_created_at) FROM history)) ORDER BY history_id DESC LIMIT 1`,
-  //       (error, result) => {
-  //         !error ? resolve(result) : reject(new Error(error));
-  //       }
-  //     );
-  //   });
-  // },
   getHistoryPerDay: (date) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -86,7 +64,7 @@ module.exports = {
   getOderCount: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT(*) AS orders FROM history WHERE WEEK(history_created_at) = WEEK(NOW()) GROUP BY WEEK(NOW())",
+        "SELECT COUNT(*) AS orders FROM history WHERE WEEK(history_created_at) = WEEK(NOW())",
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
         }

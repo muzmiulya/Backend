@@ -1,6 +1,6 @@
 const {
-  getAllPurchase,
-  getPurchaseById,
+  // getAllPurchase,
+  // getPurchaseById,
   postOrder,
   purchaseHistory,
   postPurchase,
