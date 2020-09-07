@@ -7,14 +7,12 @@ module.exports = {
     if (token) {
       token = token.split(" ")[1];
       jwt.verify(token, "RAHASIA", (error, result) => {
-        console.log(error);
         if (
           (error && error.name === "JsonWebTokenError") ||
           (error && error.name === "TokenExpiredError")
         ) {
           return helper.response(response, 403, error.message);
         } else {
-          console.log(result);
           request.token = result;
           next();
         }
@@ -28,7 +26,6 @@ module.exports = {
     if (token) {
       token = token.split(" ")[1];
       jwt.verify(token, "RAHASIA", (error, result) => {
-        console.log(error);
         if (
           (error && error.name === "JsonWebTokenError") ||
           (error && error.name === "TokenExpiredError")

@@ -132,7 +132,6 @@ module.exports = {
           return value.yesterdayIncome;
         }
       });
-      console.log(mapped2);
       if (mapped2[0] == 0) {
         incomeYesterday = "+" + result2 * 100 + "%";
       } else {
@@ -170,7 +169,6 @@ module.exports = {
         return value.orders;
       });
       const result2 = mapped[0];
-      console.log(mapped);
       const lastWeekOrder = await comparisonLastWeekOrders();
       const mapped2 = lastWeekOrder.map((value) => {
         if (
@@ -281,7 +279,6 @@ module.exports = {
         acc[item.history_created_at] = item.history_subtotal;
         return acc;
       }, {});
-      console.log(reduced);
       client.setex(
         `gethistorychartmonthly${JSON.stringify(request.query)}`,
         3600,

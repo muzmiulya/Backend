@@ -219,7 +219,6 @@ module.exports = {
         product_status,
       };
       const checkId = await getProductById(id);
-      console.log(checkId);
       if (checkId.length > 0) {
         const getProductPicture = checkId.map((value) => {
           return value.product_picture;

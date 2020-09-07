@@ -63,7 +63,6 @@ module.exports = {
         category_status: request.body.category_status,
       };
       const result = await postCategory(setData);
-      console.log(setData);
       return helper.response(response, 200, "Success Post Category", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
@@ -115,7 +114,6 @@ module.exports = {
     try {
       const { id } = request.params;
       const result = await deleteCategory(id);
-      console.log(result);
       return helper.response(response, 200, "Success Category Deleted", result);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);

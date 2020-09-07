@@ -13,7 +13,6 @@ const {
 
 module.exports = {
   registerUser: async (request, response) => {
-    console.log(request.body);
     const { user_email, user_password, user_name } = request.body;
     if (
       request.body.user_name === undefined ||
@@ -124,7 +123,6 @@ module.exports = {
         const encryptPassword = bcrypt.hashSync(user_password, salt);
         setData.user_password = encryptPassword;
       }
-      console.log(setData);
       if (checkId.length > 0) {
         const result = await patchUser(setData, id);
         return helper.response(response, 200, "Success User Updated", result);
@@ -144,7 +142,6 @@ module.exports = {
           user_password,
           checkDataUser[0].user_password
         );
-        console.log(checkPassword);
         if (checkPassword) {
           const {
             user_id,

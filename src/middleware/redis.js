@@ -39,7 +39,6 @@ module.exports = {
           );
         } else {
           console.log("data tidak ada di dalam redis");
-          console.log(result);
           next();
         }
       }
