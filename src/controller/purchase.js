@@ -1,6 +1,4 @@
 const {
-  // getAllPurchase,
-  // getPurchaseById,
   postOrder,
   purchaseHistory,
   postPurchase,
@@ -11,36 +9,6 @@ const {
 const helper = require("../helper/index");
 
 module.exports = {
-  // getAllPurchase: async (request, response) => {
-  //   try {
-  //     const result = await getAllPurchase();
-  //     return helper.response(response, 200, "Sukses Get Purchase", result);
-  //   } catch (error) {
-  //     return helper.response(response, 400, "Bad Request", error);
-  //   }
-  // },
-  // getPurchaseById: async (request, response) => {
-  //   try {
-  //     const { id } = request.params;
-  //     const result = await getPurchaseById(id);
-  //     if (result.length > 0) {
-  //       return helper.response(
-  //         response,
-  //         200,
-  //         "Success Get Purchase By Id",
-  //         result
-  //       );
-  //     } else {
-  //       return helper.response(
-  //         response,
-  //         404,
-  //         `Purchase By Id: ${id} Not Found`
-  //       );
-  //     }
-  //   } catch (error) {
-  //     return helper.response(response, 400, "Bad Request", error);
-  //   }
-  // },
   postOrder: async (request, response) => {
     if (
       request.body === undefined ||

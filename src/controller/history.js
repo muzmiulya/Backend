@@ -20,11 +20,10 @@ module.exports = {
   getAllHistory: async (request, response) => {
     try {
       const result = await getAllHistory();
-      client.set(`gethistoryall`, JSON.stringify(result));
+      client.setex(`gethistoryall`, 3600, JSON.stringify(result));
       return helper.response(response, 200, "Sukses Get History", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getHistoryById: async (request, response) => {
@@ -96,15 +95,14 @@ module.exports = {
           history_subtotal: value.history_subtotal,
         });
       });
-      client.set(
+      client.setex(
         `gethistoryperday:${JSON.stringify(request.query)}`,
+        3600,
         JSON.stringify(results)
       );
-      // console.log(results);
       return helper.response(response, 200, "Sukses Get Per Day", results);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getTodayIncome: async (request, response) => {
@@ -159,12 +157,10 @@ module.exports = {
         incomes: result2,
         incomeYesterday,
       };
-      client.set(`gethistorytodayincome`, JSON.stringify(setData));
-      // console.log(setData);
+      client.setex(`gethistorytodayincome`, 3600, JSON.stringify(setData));
       return helper.response(response, 200, "Sukses Get Today Income", setData);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getOderCount: async (request, response) => {
@@ -211,9 +207,8 @@ module.exports = {
         countThisWeek: result2,
         countLastWeek,
       };
-      client.set(`gethistoryordercount`, JSON.stringify(setData));
+      client.setex(`gethistoryordercount`, 3600, JSON.stringify(setData));
       return helper.response(response, 200, "Sukses Get Count", setData);
-      // console.log(setData);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -261,8 +256,7 @@ module.exports = {
         countThisYear: result2,
         countLastYear,
       };
-      // console.log(setData);
-      client.set(`gethistoryyearincome`, JSON.stringify(setData));
+      client.setex(`gethistoryyearincome`, 3600, JSON.stringify(setData));
       return helper.response(
         response,
         200,
@@ -271,12 +265,10 @@ module.exports = {
       );
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getChartMonthly: async (request, response) => {
     let { months } = request.query;
-    // MONTH(NOW())
     try {
       const result = await getChartMonthly(months);
       const mapped = result.map((value) => {
@@ -290,8 +282,9 @@ module.exports = {
         return acc;
       }, {});
       console.log(reduced);
-      client.set(
+      client.setex(
         `gethistorychartmonthly${JSON.stringify(request.query)}`,
+        3600,
         JSON.stringify(reduced)
       );
       return helper.response(
@@ -300,10 +293,8 @@ module.exports = {
         "Sukses Get Chart Monthly",
         reduced
       );
-      // console.log(otherMonth);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
 };

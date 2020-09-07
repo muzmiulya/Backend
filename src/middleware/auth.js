@@ -5,7 +5,6 @@ module.exports = {
   authorization: (request, response, next) => {
     let token = request.headers.authorization;
     if (token) {
-      // validasi token jwt
       token = token.split(" ")[1];
       jwt.verify(token, "RAHASIA", (error, result) => {
         console.log(error);
@@ -27,7 +26,6 @@ module.exports = {
   authorization2: (request, response, next) => {
     let token = request.headers.authorization;
     if (token) {
-      // validasi token jwt
       token = token.split(" ")[1];
       jwt.verify(token, "RAHASIA", (error, result) => {
         console.log(error);
@@ -37,7 +35,6 @@ module.exports = {
         ) {
           return helper.response(response, 403, error.message);
         } else {
-          // console.log(result);
           if (result.user_role === 2) {
             return helper.response(response, 400, "You can't access this Path");
           } else {

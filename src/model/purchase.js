@@ -1,24 +1,6 @@
 const connection = require("../config/mysql");
 
 module.exports = {
-  // getAllPurchase: () => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query("SELECT * FROM purchase", (error, result) => {
-  //       !error ? resolve(result) : reject(new Error(error));
-  //     });
-  //   });
-  // },
-  // getPurchaseById: (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     connection.query(
-  //       "SELECT * FROM purchase WHERE purchase_id = ?",
-  //       id,
-  //       (error, result) => {
-  //         !error ? resolve(result) : reject(new Error(error));
-  //       }
-  //     );
-  //   });
-  // },
   postOrder: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query(

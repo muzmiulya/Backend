@@ -17,7 +17,6 @@ module.exports = {
       return helper.response(response, 200, "Success Get All Category", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getCategoryById: async (request, response) => {

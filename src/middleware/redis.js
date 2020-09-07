@@ -21,12 +21,10 @@ module.exports = {
       }
     });
   },
-  //  tambahkan getproduct: yang ada pagination
   getAllProductRedis: (request, response, next) => {
     client.get(
       `getproductall:${JSON.stringify(request.query)}`,
       (error, result) => {
-        // console.log(results);
         if (!error && result != null) {
           const parsed = JSON.parse(result);
           const results = parsed.result;
@@ -221,7 +219,6 @@ module.exports = {
       }
     );
   },
-  // ===================================================================================
   clearDataProductRedis: (request, response, next) => {
     client.keys("getproduct*", (err, keys) => {
       if (keys.length > 0) {

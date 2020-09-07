@@ -111,7 +111,6 @@ module.exports = {
       return helper.response(response, 200, "Success Get Product Name", result);
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
-      // console.log(error);
     }
   },
   getProductById: async (request, response) => {
@@ -160,7 +159,6 @@ module.exports = {
       return helper.response(response, 404, "product_status must be filled");
     }
     try {
-      // console.log(request.file);
       const setData = {
         category_id: request.body.category_id,
         product_name: request.body.product_name,
@@ -173,10 +171,8 @@ module.exports = {
 
       const result = await postProduct(setData);
       return helper.response(response, 200, "Success Product Posted", result);
-      // console.log(setData);
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
-      // console.log(error);
     }
   },
   patchProduct: async (request, response) => {
@@ -223,6 +219,7 @@ module.exports = {
         product_status,
       };
       const checkId = await getProductById(id);
+      console.log(checkId);
       if (checkId.length > 0) {
         const getProductPicture = checkId.map((value) => {
           return value.product_picture;
@@ -242,7 +239,6 @@ module.exports = {
           "Success Product Updated",
           result
         );
-        // console.log(result);
       } else {
         return helper.response(response, 404, `Product By Id: ${id} Not Found`);
       }
@@ -265,13 +261,10 @@ module.exports = {
           return;
         }
       });
-      // console.log(justPicture);
       const result = await deleteProduct(id);
-
       return helper.response(response, 200, "Success Product Deleted", result);
     } catch (error) {
-      // return helper.response(response, 404, "Bad Request", error);
-      console.log(error);
+      return helper.response(response, 404, "Bad Request", error);
     }
   },
 };

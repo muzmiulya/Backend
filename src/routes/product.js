@@ -17,7 +17,6 @@ const {
 
 const uploadImage = require("../middleware/multer");
 
-//GET
 router.get("/", authorization, getAllProductRedis, getAllProduct);
 router.get("/:id", authorization, getProductByIdRedis, getProductById);
 router.get(
@@ -26,7 +25,6 @@ router.get(
   getProductByNameRedis,
   getAllProductByName
 );
-//POST
 router.post(
   "/",
   authorization2,
@@ -34,7 +32,6 @@ router.post(
   uploadImage,
   postProduct
 );
-//PATCH/PUT
 router.patch(
   "/:id",
   authorization2,
@@ -42,7 +39,6 @@ router.patch(
   uploadImage,
   patchProduct
 );
-//DELETE
 router.delete("/:id", authorization2, clearDataProductRedis, deleteProduct);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const helper = require("../helper/index");
 const jwt = require("jsonwebtoken");
+const redis = require("redis");
+const client = redis.createClient();
 const {
   isUserExist,
   getUserById,
@@ -13,7 +15,13 @@ module.exports = {
   registerUser: async (request, response) => {
     console.log(request.body);
     const { user_email, user_password, user_name } = request.body;
-    // console.log(user_password);
+    if (
+      request.body.user_name === undefined ||
+      request.body.user_name === null ||
+      request.body.user_name === ""
+    ) {
+      return helper.response(response, 404, "user_name must be filled");
+    }
     const atps = user_email.indexOf("@");
     const dots = user_email.lastIndexOf(".");
     if (atps < 1 || dots < atps + 2 || dots + 2 > user_email.length) {
@@ -22,7 +30,8 @@ module.exports = {
     if (
       user_password.match(/[A-Z]/g) &&
       user_password.match(/[0-9]/g) &&
-      user_password.length >= 8
+      user_password.length >= 8 &&
+      user_password.length <= 16
     ) {
       const salt = bcrypt.genSaltSync(10);
       const encryptPassword = bcrypt.hashSync(user_password, salt);
@@ -46,28 +55,34 @@ module.exports = {
             "Success Register User",
             result
           );
-          // console.log(setData);
         } catch (error) {
           return helper.response(response, 400, "Bad Request");
-          // console.log(error);
         }
       }
     } else {
       return helper.response(
         response,
         400,
-        "Password Must include at least 8 characters, 1 digit number and 1 Uppercase Characters"
+        "Password Must include at 8-16 characters, 1 digit number and 1 Uppercase"
       );
+    }
+  },
+  getUserById: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const result = await getUserById(id);
+      if (result.length > 0) {
+        client.setex(`getuserbyid:${id}`, 3600, JSON.stringify(result));
+        return helper.response(response, 200, "Success Get User By Id", result);
+      } else {
+        return helper.response(response, 404, `User By Id: ${id} Not Found`);
+      }
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
     }
   },
   patchUser: async (request, response) => {
     if (
-      request.body.user_password === undefined ||
-      request.body.user_password === null ||
-      request.body.user_password === ""
-    ) {
-      return helper.response(response, 404, "user_password must be filled");
-    } else if (
       request.body.user_role === undefined ||
       request.body.user_role === null ||
       request.body.user_role === ""
@@ -82,21 +97,37 @@ module.exports = {
     }
     try {
       const { id } = request.params;
-      const { user_password, user_role, user_status } = request.body;
-      const salt = bcrypt.genSaltSync(10);
-      const encryptPassword = bcrypt.hashSync(user_password, salt);
-      const setData = {
-        user_password: encryptPassword,
+      const { user_name, user_password, user_role, user_status } = request.body;
+      const checkId = await getUserById(id);
+      let setData = {
+        user_name,
+        user_password,
         user_role,
         user_status,
         user_updated_at: new Date(),
       };
-      const checkId = await getUserById(id);
+      if (
+        request.body.user_name === undefined ||
+        request.body.user_name === null ||
+        request.body.user_name === ""
+      ) {
+        setData.user_name = checkId[0].user_name;
+      }
+      if (
+        request.body.user_password === undefined ||
+        request.body.user_password === null ||
+        request.body.user_password === ""
+      ) {
+        setData.user_password = checkId[0].user_password;
+      } else {
+        const salt = bcrypt.genSaltSync(10);
+        const encryptPassword = bcrypt.hashSync(user_password, salt);
+        setData.user_password = encryptPassword;
+      }
       console.log(setData);
       if (checkId.length > 0) {
         const result = await patchUser(setData, id);
         return helper.response(response, 200, "Success User Updated", result);
-        // console.log(result);
       } else {
         return helper.response(response, 404, `User By Id: ${id} Not Found`);
       }
@@ -107,17 +138,14 @@ module.exports = {
   loginUser: async (request, response) => {
     try {
       const { user_email, user_password } = request.body;
-      // console.log(user_email);
       const checkDataUser = await checkUser(user_email);
       if (checkDataUser.length >= 1) {
-        //proses 2 = cek Password
         const checkPassword = bcrypt.compareSync(
           user_password,
           checkDataUser[0].user_password
         );
         console.log(checkPassword);
         if (checkPassword) {
-          //   proses 3 = set JWT
           const {
             user_id,
             user_email,
@@ -133,13 +161,16 @@ module.exports = {
             user_status,
           };
           if (user_status == 0) {
-            return helper.response(response, 400, "Your Account is not Active");
+            return helper.response(
+              response,
+              400,
+              "Your Account is not Active, Please contact your Administrator"
+            );
           } else {
             const token = jwt.sign(payload, "RAHASIA", { expiresIn: "24h" });
             payload = { ...payload, token };
             return helper.response(response, 200, "Success Login", payload);
           }
-          // console.log(user_status);
         } else {
           return helper.response(response, 400, "Wrong Password !");
         }
