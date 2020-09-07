@@ -8,7 +8,6 @@ module.exports = {
     const { id } = request.params;
     client.get(`getproductbyid:${id}`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -16,7 +15,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -29,7 +27,6 @@ module.exports = {
           const parsed = JSON.parse(result);
           const results = parsed.result;
           const pagination = parsed.pageInfo;
-          console.log("data ada di dalam redis");
           return helper.response(
             response,
             200,
@@ -38,7 +35,6 @@ module.exports = {
             pagination
           );
         } else {
-          console.log("data tidak ada di dalam redis");
           next();
         }
       }
@@ -49,7 +45,6 @@ module.exports = {
       `getproductbyname:${JSON.stringify(request.query)}`,
       (error, result) => {
         if (!error && result != null) {
-          console.log("data ada di dalam redis");
           return helper.response(
             response,
             200,
@@ -57,7 +52,6 @@ module.exports = {
             JSON.parse(result)
           );
         } else {
-          console.log("data tidak ada di dalam redis");
           next();
         }
       }
@@ -68,7 +62,6 @@ module.exports = {
   getAllCategoryRedis: (request, response, next) => {
     client.get(`getcategoryall`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -76,7 +69,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -85,7 +77,6 @@ module.exports = {
     const { id } = request.params;
     client.get(`getcategorybyid:${id}`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -93,7 +84,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -102,7 +92,6 @@ module.exports = {
   getAllHistoryRedis: (request, response, next) => {
     client.get(`gethistoryall`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -110,7 +99,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -119,7 +107,6 @@ module.exports = {
     const { id } = request.params;
     client.get(`gethistorybyid:${id}`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -127,7 +114,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -137,7 +123,6 @@ module.exports = {
       `gethistoryperday:${JSON.stringify(request.query)}`,
       (error, result) => {
         if (!error && result != null) {
-          console.log("data ada di dalam redis");
           return helper.response(
             response,
             200,
@@ -145,7 +130,6 @@ module.exports = {
             JSON.parse(result)
           );
         } else {
-          console.log("data tidak ada di dalam redis");
           next();
         }
       }
@@ -154,7 +138,6 @@ module.exports = {
   getTodayIncomeRedis: (request, response, next) => {
     client.get(`gethistorytodayincome`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -162,7 +145,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -170,7 +152,6 @@ module.exports = {
   getOderCountRedis: (request, response, next) => {
     client.get(`gethistoryordercount`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -178,7 +159,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -186,7 +166,6 @@ module.exports = {
   getyearlyIncomeRedis: (request, response, next) => {
     client.get(`gethistoryyearincome`, (error, result) => {
       if (!error && result != null) {
-        console.log("data ada di dalam redis");
         return helper.response(
           response,
           200,
@@ -194,7 +173,6 @@ module.exports = {
           JSON.parse(result)
         );
       } else {
-        console.log("data tidak ada di dalam redis");
         next();
       }
     });
@@ -204,7 +182,6 @@ module.exports = {
       `gethistorychartmonthly${JSON.stringify(request.query)}`,
       (error, result) => {
         if (!error && result != null) {
-          console.log("data ada di dalam redis");
           return helper.response(
             response,
             200,
@@ -212,7 +189,6 @@ module.exports = {
             JSON.parse(result)
           );
         } else {
-          console.log("data tidak ada di dalam redis");
           next();
         }
       }

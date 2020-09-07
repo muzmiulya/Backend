@@ -227,7 +227,6 @@ module.exports = {
         const path = `./uploads/${justPicture}`;
         fs.unlink(path, (err) => {
           if (err) {
-            console.log(err);
             return;
           }
         });
@@ -256,7 +255,6 @@ module.exports = {
       const path = `./uploads/${justPicture}`;
       fs.unlink(path, (err) => {
         if (err) {
-          console.log(err);
           return;
         }
       });
