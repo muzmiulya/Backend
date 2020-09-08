@@ -164,7 +164,7 @@ module.exports = {
               "Your Account is not Active, Please contact your Administrator"
             );
           } else {
-            const token = jwt.sign(payload, "RAHASIA", { expiresIn: "24h" });
+            const token = jwt.sign(payload, "RAHASIA", { expiresIn: "6h" });
             payload = { ...payload, token };
             return helper.response(response, 200, "Success Login", payload);
           }

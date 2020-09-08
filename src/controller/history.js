@@ -90,7 +90,6 @@ module.exports = {
           history_id: value.history_id,
           history_invoices: value.history_invoices,
           history_created_at: value.history_created_at,
-          cashier: "Cashier 1",
           orders: value.orders.toString(),
           history_subtotal: value.history_subtotal,
         });
