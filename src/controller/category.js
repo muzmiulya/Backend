@@ -48,13 +48,13 @@ module.exports = {
       request.body.category_name === null ||
       request.body.category_name === ""
     ) {
-      return helper.response(response, 404, "category_name must be filled");
+      return helper.response(response, 404, "Category name must be filled");
     } else if (
       request.body.category_status === undefined ||
       request.body.category_status === null ||
       request.body.category_status === ""
     ) {
-      return helper.response(response, 404, "category_status must be filled");
+      return helper.response(response, 404, "Category status must be filled");
     }
     try {
       const setData = {
@@ -74,13 +74,13 @@ module.exports = {
       request.body.category_name === null ||
       request.body.category_name === ""
     ) {
-      return helper.response(response, 404, "category_name must be filled");
+      return helper.response(response, 404, "Category name must be filled");
     } else if (
       request.body.category_status === undefined ||
       request.body.category_status === null ||
       request.body.category_status === ""
     ) {
-      return helper.response(response, 404, "category_status must be filled");
+      return helper.response(response, 404, "Category status must be filled");
     }
     try {
       const { id } = request.params;

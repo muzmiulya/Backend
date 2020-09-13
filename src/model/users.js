@@ -12,6 +12,13 @@ module.exports = {
       );
     });
   },
+  getAllUser: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(`SELECT * FROM user`, (error, result) => {
+        !error ? resolve(result) : reject(new Error(error));
+      });
+    });
+  },
   getUserById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -65,6 +72,24 @@ module.exports = {
         email,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  deleteUser: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "DELETE FROM user WHERE user_id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              id: id,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
         }
       );
     });

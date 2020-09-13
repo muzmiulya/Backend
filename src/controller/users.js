@@ -5,65 +5,93 @@ const redis = require("redis");
 const client = redis.createClient();
 const {
   isUserExist,
+  getAllUser,
   getUserById,
   patchUser,
   postUser,
   checkUser,
+  deleteUser,
 } = require("../model/users");
 
 module.exports = {
   registerUser: async (request, response) => {
-    const { user_email, user_password, user_name } = request.body;
-    if (
-      request.body.user_name === undefined ||
-      request.body.user_name === null ||
-      request.body.user_name === ""
-    ) {
-      return helper.response(response, 404, "user_name must be filled");
-    }
-    const atps = user_email.indexOf("@");
-    const dots = user_email.lastIndexOf(".");
-    if (atps < 1 || dots < atps + 2 || dots + 2 > user_email.length) {
-      return helper.response(response, 400, "Email is not Valid");
-    }
-    if (
-      user_password.match(/[A-Z]/g) &&
-      user_password.match(/[0-9]/g) &&
-      user_password.length >= 8 &&
-      user_password.length <= 16
-    ) {
-      const salt = bcrypt.genSaltSync(10);
-      const encryptPassword = bcrypt.hashSync(user_password, salt);
-      const userInDatabase = await isUserExist(user_email);
-      if (userInDatabase.length > 0) {
-        return helper.response(response, 400, "Email Has Already Been Taken");
-      } else if (userInDatabase.length <= 0) {
-        const setData = {
-          user_email: user_email,
-          user_password: encryptPassword,
-          user_name: user_name,
-          user_role: 2,
-          user_status: 0,
-          user_created_at: new Date(),
-        };
-        try {
-          const result = await postUser(setData);
+    try {
+      const { user_email, user_password, user_name } = request.body;
+      if (
+        request.body.user_name === undefined ||
+        request.body.user_name === null ||
+        request.body.user_name === ""
+      ) {
+        return helper.response(response, 404, "User Name must be filled");
+      } else if (
+        request.body.user_email === undefined ||
+        request.body.user_email === null ||
+        request.body.user_email === ""
+      ) {
+        return helper.response(response, 404, "User Email must be filled");
+      } else if (
+        request.body.user_password === undefined ||
+        request.body.user_password === null ||
+        request.body.user_password === ""
+      ) {
+        return helper.response(response, 404, "User Password must be filled");
+      } else {
+        const atps = user_email.indexOf("@");
+        const dots = user_email.lastIndexOf(".");
+        if (atps < 1 || dots < atps + 2 || dots + 2 > user_email.length) {
+          return helper.response(response, 400, "Email is not Valid");
+        }
+        if (
+          user_password.match(/[A-Z]/g) &&
+          user_password.match(/[0-9]/g) &&
+          user_password.length >= 8 &&
+          user_password.length <= 16
+        ) {
+          const salt = bcrypt.genSaltSync(10);
+          const encryptPassword = bcrypt.hashSync(user_password, salt);
+          const userInDatabase = await isUserExist(user_email);
+          if (userInDatabase.length > 0) {
+            return helper.response(
+              response,
+              400,
+              "Email Has Already Been Taken"
+            );
+          } else if (userInDatabase.length <= 0) {
+            const setData = {
+              user_email: user_email,
+              user_password: encryptPassword,
+              user_name: user_name,
+              user_role: 2,
+              user_status: 0,
+              user_created_at: new Date(),
+            };
+
+            const result = await postUser(setData);
+            return helper.response(
+              response,
+              200,
+              "Success Register User",
+              result
+            );
+          }
+        } else {
           return helper.response(
             response,
-            200,
-            "Success Register User",
-            result
+            400,
+            "Password Must include 8-16 characters, at least 1 digit number and 1 Uppercase"
           );
-        } catch (error) {
-          return helper.response(response, 400, "Bad Request");
         }
       }
-    } else {
-      return helper.response(
-        response,
-        400,
-        "Password Must include at 8-16 characters, 1 digit number and 1 Uppercase"
-      );
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request");
+    }
+  },
+  getAllUser: async (request, response) => {
+    try {
+      const result = await getAllUser();
+      return helper.response(response, 200, "Success Get All User", result);
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
     }
   },
   getUserById: async (request, response) => {
@@ -118,6 +146,8 @@ module.exports = {
         request.body.user_password === ""
       ) {
         setData.user_password = checkId[0].user_password;
+      } else if (request.body.user_password == checkId[0].user_password) {
+        setData.user_password = checkId[0].user_password;
       } else {
         const salt = bcrypt.genSaltSync(10);
         const encryptPassword = bcrypt.hashSync(user_password, salt);
@@ -133,7 +163,29 @@ module.exports = {
       return helper.response(response, 404, "Bad Request", error);
     }
   },
+  deleteUser: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const result = await deleteUser(id);
+      return helper.response(response, 200, "Success User Deleted", result);
+    } catch (error) {
+      return helper.response(response, 404, "Bad Request", error);
+    }
+  },
   loginUser: async (request, response) => {
+    if (
+      request.body.user_email === undefined ||
+      request.body.user_email === null ||
+      request.body.user_email === ""
+    ) {
+      return helper.response(response, 404, "Email must be filled");
+    } else if (
+      request.body.user_password === undefined ||
+      request.body.user_password === null ||
+      request.body.user_password === ""
+    ) {
+      return helper.response(response, 404, "Password must be filled");
+    }
     try {
       const { user_email, user_password } = request.body;
       const checkDataUser = await checkUser(user_email);
@@ -172,11 +224,7 @@ module.exports = {
           return helper.response(response, 400, "Wrong Password !");
         }
       } else {
-        return helper.response(
-          response,
-          400,
-          "Email / Account is not Registered !"
-        );
+        return helper.response(response, 400, "Email is not Registered !");
       }
     } catch (error) {
       return helper.response(response, 400, "Bad Request");

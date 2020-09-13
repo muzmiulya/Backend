@@ -2,6 +2,7 @@ const {
   getProduct,
   getProductByName,
   getProductCount,
+  getProductCountName,
   getProductById,
   postProduct,
   patchProduct,
@@ -90,17 +91,35 @@ module.exports = {
     }
   },
   getAllProductByName: async (request, response) => {
-    let { search, limit } = request.query;
+    let { search, page, limit } = request.query;
     if (search === undefined || search === null || search === "") {
       search = "%";
     } else {
       search = "%" + search + "%";
+    }
+    if (page === undefined || page === null || page === "") {
+      page = parseInt(1);
+    } else {
+      page = parseInt(page);
     }
     if (limit === undefined || limit === null || limit === "") {
       limit = parseInt(9);
     } else {
       limit = parseInt(limit);
     }
+    let totalData = await getProductCountName(search);
+    let totalPage = Math.ceil(totalData / limit);
+    let prevLink = getPrevLink(page, request.query);
+    let nextLink = getNextLink(page, totalPage, request.query);
+
+    const pageInfo = {
+      page,
+      totalPage,
+      limit,
+      totalData,
+      prevLink: prevLink && `http://127.0.0.1:3001/product?${prevLink}`,
+      nextLink: nextLink && `http://127.0.0.1:3001/product?${nextLink}`,
+    };
     try {
       const result = await getProductByName(search, limit);
       client.setex(
@@ -108,7 +127,13 @@ module.exports = {
         3600,
         JSON.stringify(result)
       );
-      return helper.response(response, 200, "Success Get Product Name", result);
+      return helper.response(
+        response,
+        200,
+        "Success Get Product Name",
+        result,
+        pageInfo
+      );
     } catch (error) {
       return helper.response(response, 400, "Bad Request", error);
     }
@@ -209,34 +234,46 @@ module.exports = {
         product_price,
         product_status,
       } = request.body;
-      const setData = {
-        category_id,
-        product_name,
-        product_price,
-        product_picture:
-          request.file === undefined ? "" : request.file.filename,
-        product_updated_at: new Date(),
-        product_status,
-      };
       const checkId = await getProductById(id);
       if (checkId.length > 0) {
-        const getProductPicture = checkId.map((value) => {
-          return value.product_picture;
-        });
-        const justPicture = getProductPicture[0];
-        const path = `./uploads/${justPicture}`;
-        fs.unlink(path, (err) => {
-          if (err) {
-            return;
-          }
-        });
-        const result = await patchProduct(setData, id);
-        return helper.response(
-          response,
-          200,
-          "Success Product Updated",
-          result
-        );
+        const setData = {
+          category_id,
+          product_name,
+          product_price,
+          product_picture:
+            request.file === undefined
+              ? checkId[0].product_picture
+              : request.file.filename,
+          product_updated_at: new Date(),
+          product_status,
+        };
+        if (setData.product_picture === checkId[0].product_picture) {
+          const result = await patchProduct(setData, id);
+          return helper.response(
+            response,
+            200,
+            "Success Product Updated",
+            result
+          );
+        } else {
+          const getProductPicture = checkId.map((value) => {
+            return value.product_picture;
+          });
+          const justPicture = getProductPicture[0];
+          const path = `./uploads/${justPicture}`;
+          fs.unlink(path, (err) => {
+            if (err) {
+              return;
+            }
+          });
+          const result = await patchProduct(setData, id);
+          return helper.response(
+            response,
+            200,
+            "Success Product Updated",
+            result
+          );
+        }
       } else {
         return helper.response(response, 404, `Product By Id: ${id} Not Found`);
       }

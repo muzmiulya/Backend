@@ -266,6 +266,9 @@ module.exports = {
   },
   getChartMonthly: async (request, response) => {
     let { months } = request.query;
+    if (months === undefined || months === null || months === "") {
+      months = `MONTH(NOW())`;
+    }
     try {
       const result = await getChartMonthly(months);
       const mapped = result.map((value) => {

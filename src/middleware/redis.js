@@ -45,11 +45,15 @@ module.exports = {
       `getproductbyname:${JSON.stringify(request.query)}`,
       (error, result) => {
         if (!error && result != null) {
+          const parsed = JSON.parse(result);
+          const results = parsed.result;
+          const pagination = parsed.pageInfo;
           return helper.response(
             response,
             200,
             "Success Get Product Name",
-            JSON.parse(result)
+            results,
+            pagination
           );
         } else {
           next();

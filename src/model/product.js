@@ -33,6 +33,17 @@ module.exports = {
       );
     });
   },
+  getProductCountName: (search) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT COUNT(*) as total FROM product WHERE product_name LIKE ?",
+        search,
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
+  },
   getProductById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
