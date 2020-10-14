@@ -196,7 +196,8 @@ module.exports = {
       const result = await postProduct(setData);
       return helper.response(response, 200, "Success Product Posted", result);
     } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
+      // return helper.response(response, 404, "Bad Request", error);
+      console.log(error)
     }
   },
   patchProduct: async (request, response) => {

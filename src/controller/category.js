@@ -60,6 +60,7 @@ module.exports = {
       const setData = {
         category_name: request.body.category_name,
         category_created_at: new Date(),
+        category_updated_at: new Date(),
         category_status: request.body.category_status,
       };
       const result = await postCategory(setData);

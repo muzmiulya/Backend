@@ -35,6 +35,7 @@ module.exports = {
         history_invoices: Math.floor(Math.random() * 1000000000) + 1000000000,
         history_created_at: new Date(),
         history_user_name: request.body.cashier,
+        history_subtotal: 0
       };
       const result = await postOrder(setData);
 
