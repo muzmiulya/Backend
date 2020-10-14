@@ -291,19 +291,24 @@ module.exports = {
   deleteProduct: async (request, response) => {
     try {
       const { id } = request.params;
-      const getId = await getProductById(id);
-      const getProductPicture = getId.map((value) => {
-        return value.product_picture;
-      });
-      const justPicture = getProductPicture[0];
-      const path = `./uploads/${justPicture}`;
-      fs.unlink(path, (err) => {
-        if (err) {
-          return;
+      const checkId = await getProductById(id);
+      if (checkId.length > 0) {
+        if (checkId[0].product_picture === 'noimage.png') {
+          const result = await deleteProduct(id);
+          return helper.response(response, 200, "Success Product Deleted", result);
+        } else {
+          const path = `./uploads/${checkId[0].product_picture}`;
+          fs.unlink(path, (err) => {
+            if (err) {
+              return;
+            }
+          });
+          const result = await deleteProduct(id);
+          return helper.response(response, 200, "Success Product Deleted", result);
         }
-      });
-      const result = await deleteProduct(id);
-      return helper.response(response, 200, "Success Product Deleted", result);
+      } else {
+        return helper.response(response, 404, `Product By Id: ${id} Not Found`);
+      }
     } catch (error) {
       return helper.response(response, 404, "Bad Request", error);
     }

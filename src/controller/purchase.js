@@ -94,7 +94,8 @@ module.exports = {
       };
       return helper.response(response, 200, "Success Order Posted", data);
     } catch (error) {
-      return helper.response(response, 404, "Bad Request", error);
+      // return helper.response(response, 404, "Bad Request", error);
+      console.log(error)
     }
   },
 };

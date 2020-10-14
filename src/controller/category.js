@@ -65,7 +65,8 @@ module.exports = {
       const result = await postCategory(setData);
       return helper.response(response, 200, "Success Post Category", result);
     } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
+      // return helper.response(response, 400, "Bad Request", error);
+      console.log(error)
     }
   },
   patchCategory: async (request, response) => {
