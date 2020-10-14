@@ -190,14 +190,14 @@ module.exports = {
         product_picture:
           request.file === undefined ? "noimage.png" : request.file.filename,
         product_created_at: new Date(),
+        product_updated_at: new Date(),
         product_status: request.body.product_status,
       };
 
       const result = await postProduct(setData);
       return helper.response(response, 200, "Success Product Posted", result);
     } catch (error) {
-      // return helper.response(response, 404, "Bad Request", error);
-      console.log(error)
+      return helper.response(response, 404, "Bad Request", error);
     }
   },
   patchProduct: async (request, response) => {
