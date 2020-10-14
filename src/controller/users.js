@@ -84,8 +84,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      // return helper.response(response, 400, "Bad Request");
-      console.log(error)
+      return helper.response(response, 400, "Bad Request");
     }
   },
   getAllUser: async (request, response) => {

@@ -100,4 +100,4 @@ IP=127.0.0.1
 
 ## Postman link
 
-Link: https://web.postman.co/collections/12323107-3cd415e1-06ec-4889-9c61-e1c90c4ba219?version=latest&workspace=b7f7c54f-78e5-4889-81bc-f5c323799f66
+Link: https://documenter.getpostman.com/view/12323107/TVRoXmGJ
