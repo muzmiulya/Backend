@@ -22,12 +22,19 @@ module.exports = {
       request.body.orders === ""
     ) {
       return helper.response(response, 404, "orders must be filled");
+    } else if (
+      request.body.cashier === undefined ||
+      request.body.cashier === null ||
+      request.body.cashier === ""
+    ) {
+      return helper.response(response, 404, "cashier must be filled");
     }
 
     try {
       const setData = {
         history_invoices: Math.floor(Math.random() * 1000000000) + 1000000000,
         history_created_at: new Date(),
+        history_user_name: request.body.cashier,
       };
       const result = await postOrder(setData);
 
@@ -81,6 +88,7 @@ module.exports = {
       const data = {
         history_id: result.history_id,
         history_invoices: result.history_invoices,
+        history_user_name: result.history_user_name,
         orders: marble,
         history_subtotal: result5.history_subtotal,
       };

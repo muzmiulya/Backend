@@ -54,6 +54,7 @@ module.exports = {
         return (setData = {
           history_id: value.history_id,
           history_invoices: "SIE-" + value.history_invoices,
+          cashier: value.history_user_name,
           history_created_at: value.history_created_at.toLocaleString(
             "default",
             {
@@ -89,6 +90,7 @@ module.exports = {
         return (setData2 = {
           history_id: value.history_id,
           history_invoices: value.history_invoices,
+          cashier: value.cashier,
           history_created_at: value.history_created_at,
           orders: value.orders.toString(),
           history_subtotal: value.history_subtotal,

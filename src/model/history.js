@@ -22,7 +22,7 @@ module.exports = {
   getHistoryPerDay: (date) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT history.history_id, history.history_invoices, purchase.purchase_id, purchase.product_id, product.product_name, purchase.purchase_qty, purchase.purchase_total, history.history_subtotal, history.history_created_at FROM history INNER JOIN purchase ON history.history_id = purchase.history_id INNER JOIN product ON purchase.product_id = product.product_id WHERE ${date}(history.history_created_at) = ${date}(NOW()) ORDER BY history.history_id DESC`,
+        `SELECT history.history_id, history.history_invoices, history.history_user_name, purchase.purchase_id, purchase.product_id, product.product_name, purchase.purchase_qty, purchase.purchase_total, history.history_subtotal, history.history_created_at FROM history INNER JOIN purchase ON history.history_id = purchase.history_id INNER JOIN product ON purchase.product_id = product.product_id WHERE ${date}(history.history_created_at) = ${date}(NOW()) ORDER BY history.history_id DESC`,
 
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));

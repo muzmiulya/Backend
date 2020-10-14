@@ -10,7 +10,6 @@ const {
 } = require("../model/product");
 const qs = require("querystring");
 const helper = require("../helper/index.js");
-const { request } = require("express");
 const redis = require("redis");
 const fs = require("fs");
 const client = redis.createClient();
@@ -189,7 +188,7 @@ module.exports = {
         product_name: request.body.product_name,
         product_price: request.body.product_price,
         product_picture:
-          request.file === undefined ? "" : request.file.filename,
+          request.file === undefined ? "noimage.png" : request.file.filename,
         product_created_at: new Date(),
         product_status: request.body.product_status,
       };
@@ -240,14 +239,25 @@ module.exports = {
           category_id,
           product_name,
           product_price,
-          product_picture:
-            request.file === undefined
-              ? checkId[0].product_picture
-              : request.file.filename,
+          product_picture: request.file,
           product_updated_at: new Date(),
           product_status,
         };
-        if (setData.product_picture === checkId[0].product_picture) {
+        if (checkId[0].product_picture === 'noimage.png') {
+          if (request.file === undefined) {
+            setData.product_picture = 'noimage.png'
+          } else {
+            setData.product_picture = request.file.filename
+          }
+          const result = await patchProduct(setData, id);
+          return helper.response(
+            response,
+            200,
+            "Success Product Updated",
+            result
+          );
+        } else if (request.file === undefined) {
+          setData.product_picture = checkId[0].product_picture
           const result = await patchProduct(setData, id);
           return helper.response(
             response,
@@ -256,14 +266,11 @@ module.exports = {
             result
           );
         } else {
-          const getProductPicture = checkId.map((value) => {
-            return value.product_picture;
-          });
-          const justPicture = getProductPicture[0];
-          const path = `./uploads/${justPicture}`;
-          fs.unlink(path, (err) => {
-            if (err) {
-              return;
+          setData.product_picture = request.file.filename
+          const path = `./uploads/${checkId[0].product_picture}`;
+          fs.unlink(path, (error) => {
+            if (error) {
+              throw error
             }
           });
           const result = await patchProduct(setData, id);

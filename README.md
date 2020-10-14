@@ -51,7 +51,6 @@ IP=127.0.0.1
 - `/category/`(Get all category)
 - `/category/:id`(Get category by id)
 
-- `/history/`(Get all history)
 - `/history/:id`(Get history by id)
 - `/history/days/days`(Get history per day)
 - `/history/income/today`(Get income today)
@@ -59,7 +58,8 @@ IP=127.0.0.1
 - `/history/income/year`(Get income this year)
 - `/history/chart/monthly`(Get total income each day per month)
 
-- `/users/:id`(Get user by id)
+- `/users/user/`(Get all user)
+- `/users/user/:id`(Get user by id)
 
 **2. POST**
 
