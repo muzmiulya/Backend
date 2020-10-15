@@ -33,7 +33,7 @@ Open .env file on your favorite code editor, and copy paste this code below :
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
-DB_DATABASE=online_shop
+DB_DATABASE=foodsie
 
 PORT=3001
 IP=127.0.0.1
